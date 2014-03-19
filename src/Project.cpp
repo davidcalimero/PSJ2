@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define CAPTION "PSJ Assignment 1"
+#define CAPTION "PSJ Assignment 2"
 
 int WinX = 640, WinY = 480;
 int WindowHandle = 0;
@@ -11,7 +11,7 @@ unsigned int FrameCount = 0;
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
 void cleanup() {
-	GameManager::getInstance()->destroyBufferObjects();
+	//GameManager::getInstance()->destroyBufferObjects();
 }
 
 
@@ -20,10 +20,10 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearStencil(0);
 
-	GameManager::getInstance()->update();
-	GameManager::getInstance()->draw();
-	GameManager::getInstance()->postProcessing();
-	Input::getInstance()->reset();
+	//GameManager::getInstance()->update();
+	//GameManager::getInstance()->draw();
+	//GameManager::getInstance()->postProcessing();
+	//Input::getInstance()->reset();
 
 	glutSwapBuffers();
 }
@@ -43,42 +43,42 @@ void reshape(int w, int h) {
 
 
 void keyPressed(unsigned char key, int x, int y){
-	Input::getInstance()->keyPressed(key);
+	//Input::getInstance()->keyPressed(key);
 }
 
 
 void keyUp(unsigned char key, int x, int y){
-	Input::getInstance()->keyUp(key);
+	//Input::getInstance()->keyUp(key);
 }
 
 
 void specialPressed(int key, int x, int y){
-	Input::getInstance()->specialPressed(key);
+	//Input::getInstance()->specialPressed(key);
 }
 
 
 void specialUp(int key, int x, int y) {
-	Input::getInstance()->specialUp(key);
+	//Input::getInstance()->specialUp(key);
 
 }
 
 
 void mouse(int button, int state, int x, int y)  {
-	Input::getInstance()->mouse(button, state);
+	//Input::getInstance()->mouse(button, state);
 }
 
 void mouseClickMotion(int x, int y) {
-	Input::getInstance()->mouseClickMotion(x, y);
+	//Input::getInstance()->mouseClickMotion(x, y);
 }
 
 
 void mousePassiveMotion(int x, int y) {
-	Input::getInstance()->mousePassiveMotion(x, y);
+	//Input::getInstance()->mousePassiveMotion(x, y);
 }
 
 
 void mouseWheel(int wheel, int direction, int x, int y) {
-	Input::getInstance()->mouseWheel(direction);
+	//Input::getInstance()->mouseWheel(direction);
 }
 
 
@@ -161,7 +161,7 @@ void init(int argc, char* argv[]) {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
-	GameManager::getInstance()->init();
+	//GameManager::getInstance()->init();
 	setupCallbacks();
 }
 
