@@ -21,7 +21,7 @@ typedef struct {
 typedef struct {
 	glm::vec3 p1, p2, p3;
 	Properties properties;
-} Polygon;
+} Triangle;
 
 
 typedef struct {
@@ -36,7 +36,8 @@ typedef struct {
 	glm::vec3 color;
 } Light;
 
+
 namespace Utils {
 
-	void loadNFF(char* filename);
+	void loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, std::vector<Light*> &lights, std::vector<Sphere*> &spheres, std::vector<Triangle*> &triangles);
 }
