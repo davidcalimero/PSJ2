@@ -81,7 +81,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\Project.cpp" />
     <ClCompile Include="..\src\Utils.cpp" />
@@ -89,9 +88,6 @@
   <ItemGroup>
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Utils.h" />
-=======
-    <ClCompile Include="..\src\Project.cpp" />
->>>>>>> 5f8d118baef7c993984321817f9128e8f97bc007
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
