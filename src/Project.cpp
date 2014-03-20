@@ -3,17 +3,18 @@
 #include <sstream>
 #include <iomanip>
 #include <glm.hpp>
-#include "Utils.h"
+#include <vector>
 
-//#include "scene.h"
+#include "Scene.h"
 
 #define MAX_DEPTH 6
 
-//Scene* scene = NULL;
+Scene* scene;
 int RES_X, RES_Y;
 float Loading = 0;
 int WindowHandle = 0;
 
+glm::vec3 rayTracing(Ray ray, int depth, int ior);
 
 //Imprime no cabecalho da janela a percentagem de carregamento da imagem
 void loading_print() {
@@ -42,14 +43,15 @@ void reshape(int w, int h) {
 void drawScene() {
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
-			//Ray ray = scene->GetCamera()->PrimaryRay(x, y);
+			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
 			//Color color = rayTracing(ray, 1, 1.0); //depth=1, ior=1.0
+			glm::vec3 color = rayTracing(ray, 1, 1);
 
 			Loading = (x + 1 + y*(RES_X)) / (float)(RES_X * RES_Y) * 100.0f;
 			loading_print();
 
 			glBegin(GL_POINTS);
-			glColor3f(1, 0, 0);
+			glColor3f(color.x, color.y, color.z);
 			glVertex2f(x, y);
 			glEnd();
 			glFlush();
@@ -62,11 +64,10 @@ void drawScene() {
 
 int main(int argc, char**argv) {
 
-	//Utils::loadNFF("test.nff");
-	//scene = new Scene();
-	//if (!(scene->load_nff("jap.nff"))) return 0;
-	RES_X = 500;//scene->GetCamera()->GetResX();
-	RES_Y = 500;//scene->GetCamera()->GetResY();
+	scene = new Scene();
+	if (!(scene->loadNFF("test.nff"))) return 0;
+	RES_X = scene->GetCamera()->GetResX();
+	RES_Y = scene->GetCamera()->GetResY();
 	std::cout << "Resolution: " << RES_X << " X " << RES_Y << std::endl;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
@@ -80,4 +81,30 @@ int main(int argc, char**argv) {
 	glDisable(GL_DEPTH_TEST);
 	glutMainLoop();
 	return 0;
+}
+
+
+
+//Ray Tracing
+
+glm::vec3 rayTracing(Ray ray, int depth, int ior){
+	std::vector<Object*> objs = scene->GetObjects();
+
+	float nearestPoint = -1;
+	glm::vec3 color;
+	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
+		glm::vec3 point;
+		bool intercept = ((Object*)(*it))->rayInterception(ray, point);
+
+		float dist = glm::distance(ray.O, point);
+		if ((nearestPoint == -1 || dist < nearestPoint) && intercept){
+			nearestPoint = dist;
+			color = ((Object*)(*it))->GetFillColor();
+		}
+	}
+
+	if (nearestPoint != -1)
+		return color;
+
+	return scene->GetBckgColor();
 }

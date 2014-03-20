@@ -8,3 +8,7 @@ Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance,
 	_transmittance = transmittance;
 	_indexRefraction = indexRefraction;
 }
+
+glm::vec3 Object::GetFillColor(){
+	return _fill_color;
+}
