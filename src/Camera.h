@@ -2,6 +2,7 @@
 
 #include <glm.hpp>
 #include "Utils.h"
+#include <math.h>
 
 
 class Camera {
@@ -22,5 +23,6 @@ public:
 	int GetResX();
 	int GetResY();
 	Ray PrimaryRay(int x, int y);
+	glm::vec3 GetPos();
 
 };

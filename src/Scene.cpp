@@ -18,9 +18,8 @@ bool Scene::loadNFF(char* filename){
 	float angle;
 	float hither;
 	glm::vec2 resolution;
-	std::vector<Light*> lights;
 
-	bool result = loadNFF(filename, from, at, up, angle, hither, resolution, _bckg_color, lights, _objects);
+	bool result = loadNFF(filename, from, at, up, angle, hither, resolution, _bckg_color, _lights, _objects);
 
 	if (!result) return result;
 	_camera = new Camera(from, at, up, angle, 0, 0, resolution.x, resolution.y);

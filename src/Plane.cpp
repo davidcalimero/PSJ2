@@ -7,19 +7,19 @@ Plane::Plane(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_color, glm
 	_v2 = v2;
 	_v3 = v3;
 
-	_normal = glm::cross(_v3 - _v2, _v2 - _v1);
+	_normal = glm::normalize(glm::cross(_v3 - _v2, _v1 - _v2));
 }
 
 bool Plane::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 	normal = _normal;
-	float D = (_normal.x * ray.O.x + _normal.y * ray.O.y + _normal.z * ray.O.z) / _normal.length() * 1.0f;
+	float D = -glm::dot(normal, _v1);
 
-	float denominator = glm::dot(_normal, ray.D);
+	float denominator = _normal.x * ray.D.x + _normal.y * ray.D.y + _normal.z * ray.D.z;
 	if (denominator == 0) return false;
 	if (denominator > 0) return false;
 
-	float ti = -(glm::dot(_normal, ray.O) + D) / denominator*1.0f;
+	float ti = -(_normal.x * ray.O.x + _normal.y * ray.O.y + _normal.z * ray.O.z + D) / denominator;
 
 	if (ti < 0) return false;
 

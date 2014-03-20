@@ -105,6 +105,11 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 	std::vector<Object*> objs = scene->GetObjects();
 	float nearestPoint = -1;
 	glm::vec3 color = scene->GetBckgColor();
+
+	glm::vec3 pointB;
+	glm::vec3 normalB;
+	Object* oB;
+
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		glm::vec3 point;
 		glm::vec3 normal;
@@ -114,18 +119,31 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 		if ((nearestPoint == -1 || dist < nearestPoint) && intercept){
 			nearestPoint = dist;
 			color = ((Object*)(*it))->GetFillColor();
+			pointB = point;
+			normalB = normal;
+			oB = (Object*)(*it);
+		}
 
-			//Calcular Raios Sombra
-			std::vector<Light*> lights = scene->GetLights();
-			for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
-				glm::vec3 L = glm::normalize((*il)->position - point);
-				if (glm::dot(L, normal) > 0){
-					Ray shadow;
-					shadow.O = (*il)->position;
-					shadow.D = L;
-					if (isAffectedByLight(shadow))
-						color += (*it)->Get_k_constants().x + (*it)->Get_k_constants().y;
-				}
+
+	}
+
+	//Calcular Raios Sombra
+
+	std::vector<Light*> lights = scene->GetLights();
+	if (lights.size() > 0) color = glm::vec3(0);
+	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
+		glm::vec3 L = glm::normalize((*il)->position - pointB);
+		if (glm::dot(L, normalB) > 0){
+			Ray shadow;
+			shadow.O = pointB + 0.001f*L;
+			shadow.D = L;
+			if (isAffectedByLight(shadow)){
+				//color += (*il)->color * (*it)->Get_k_constants().x;// + glm::vec3(1) * (*it)->Get_k_constants().y * (*it)->Get_k_constants().z;
+				//color -= (*it)->Get_k_constants().x + (*it)->Get_k_constants().y;
+				//color += (*il)->color * oB->Get_k_constants().x + (*il)->color * oB->Get_k_constants().y * oB->Get_k_constants().z;
+				glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - pointB));
+				color += oB->Get_k_constants().x * (*il)->color * oB->GetFillColor() * glm::dot(L, normalB) + oB->Get_k_constants().y * (*il)->color * oB->GetFillColor() * pow(glm::dot(H, normalB), oB->Get_k_constants().z);
+
 			}
 		}
 	}

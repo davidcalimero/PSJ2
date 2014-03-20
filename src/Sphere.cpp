@@ -27,5 +27,6 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	normal.y = (point.y - _centro.y) / _raio;
 	normal.z = (point.z - _centro.z) / _raio;
 	
+	normal = glm::normalize(normal);
 	return true;
 }

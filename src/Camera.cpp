@@ -13,12 +13,12 @@ Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float near
 	_ResY = ResY;
 
 	//Mais inicialização....
-	_d = (_eye - _at).length();
-	_h = 2 * _d * tan(_fovy / 2);
-	_w = _ResX / _ResY * _h;
+	_d = Utils::norma(_eye - _at);
+	_h = (float) 2 * _d * tan(_fovy * PI/180.0f / 2.0f);
+	_w = (float)_ResX / _ResY * _h;
 
-	_ze = (_eye - _at) / (float)(_eye - _at).length();
-	_xe = glm::cross(_up, _ze) / (float)(glm::cross(_up, _ze)).length();
+	_ze = (_eye - _at) / _d;
+	_xe = glm::cross(_up, _ze) / Utils::norma(glm::cross(_up, _ze));
 	_ye = glm::cross(_ze, _xe);
 
 }
@@ -42,4 +42,8 @@ int Camera::GetResX(){
 
 int Camera::GetResY(){
 	return _ResY;
+}
+
+glm::vec3 Camera::GetPos(){
+	return _eye;
 }
