@@ -31,6 +31,10 @@ std::vector<Object*> Scene::GetObjects(){
 	return _objects;
 }
 
+std::vector<Light*> Scene::GetLights(){
+	return _lights;
+}
+
 bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects){
 
 	//DEBUG ISSUES

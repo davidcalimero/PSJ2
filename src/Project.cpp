@@ -84,27 +84,51 @@ int main(int argc, char**argv) {
 }
 
 
+bool isAffectedByLight(Ray ray){
+	std::vector<Object*> objs = scene->GetObjects();
+	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
+		glm::vec3 point;
+		glm::vec3 normal;
+		if (((Object*)(*it))->rayInterception(ray, point, normal)){
+			return false;
+		}
+	}
+	return true;
+}
+
 
 //Ray Tracing
 
 glm::vec3 rayTracing(Ray ray, int depth, int ior){
-	std::vector<Object*> objs = scene->GetObjects();
 
+	//Determinar interseção mais proxima com um objecto
+	std::vector<Object*> objs = scene->GetObjects();
 	float nearestPoint = -1;
-	glm::vec3 color;
+	glm::vec3 color = scene->GetBckgColor();
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		glm::vec3 point;
-		bool intercept = ((Object*)(*it))->rayInterception(ray, point);
+		glm::vec3 normal;
+		bool intercept = ((Object*)(*it))->rayInterception(ray, point, normal);
 
 		float dist = glm::distance(ray.O, point);
 		if ((nearestPoint == -1 || dist < nearestPoint) && intercept){
 			nearestPoint = dist;
 			color = ((Object*)(*it))->GetFillColor();
+
+			//Calcular Raios Sombra
+			std::vector<Light*> lights = scene->GetLights();
+			for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
+				glm::vec3 L = glm::normalize((*il)->position - point);
+				if (glm::dot(L, normal) > 0){
+					Ray shadow;
+					shadow.O = (*il)->position;
+					shadow.D = L;
+					if (isAffectedByLight(shadow))
+						color += (*it)->Get_k_constants().x + (*it)->Get_k_constants().y;
+				}
+			}
 		}
 	}
 
-	if (nearestPoint != -1)
-		return color;
-
-	return scene->GetBckgColor();
+	return color;
 }

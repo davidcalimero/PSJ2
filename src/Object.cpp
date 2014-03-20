@@ -12,3 +12,7 @@ Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance,
 glm::vec3 Object::GetFillColor(){
 	return _fill_color;
 }
+
+glm::vec3 Object::Get_k_constants(){
+	return _k_constants;
+}

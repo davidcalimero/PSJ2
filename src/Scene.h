@@ -24,4 +24,5 @@ public:
 	bool loadNFF(char* filename);
 
 	std::vector<Object*> GetObjects();
+	std::vector<Light*> GetLights();
 };

@@ -16,8 +16,9 @@ protected:
 
 public:
 	Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction);
-	virtual bool rayInterception(Ray ray, glm::vec3 &point) = 0;
+	virtual bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal) = 0;
 
 	glm::vec3 GetFillColor();
+	glm::vec3 Get_k_constants();
 
 };
