@@ -1,11 +1,20 @@
-#include <stdlib.h>
+
 #include <GL/glut.h>
 #include <iostream>
-#include <stdio.h>
+#include <sstream>
+#include <iomanip>
+
 //#include "scene.h"
+
+
 #define MAX_DEPTH 6
 //Scene* scene = NULL;
 int RES_X, RES_Y;
+float loading = 0;
+int WindowHandle = 0;
+
+void loading_print();
+
 void reshape(int w, int h)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -26,16 +35,30 @@ void drawScene()
 		{
 			//Ray ray = scene->GetCamera()->PrimaryRay(x, y);
 			//Color color = rayTracing(ray, 1, 1.0); //depth=1, ior=1.0
-			//glBegin(GL_POINTS);
-			//glColor3f(color.r(), color.g(), color.b());
-			//glVertex2f(x, y);
-			//glEnd();
-			//glFlush();
+
+			loading = (x+1 + y*(RES_X)) / (float)(RES_X * RES_Y) * 100.0f;
+			loading_print();
+
+			glBegin(GL_POINTS);
+			glColor3f(1, 0, 0);
+			glVertex2f(x, y);
+			glEnd();
+			glFlush();
 		}
 	}
-	glFlush();
+	
 	printf("Terminou!\n");
 }
+
+void loading_print() {
+	std::ostringstream oss;
+	oss << std::setprecision(2) << std::fixed;
+	oss << "FRED Ray Tracing: " << loading << "%";
+	std::string s = oss.str();
+	glutSetWindow(WindowHandle);
+	glutSetWindowTitle(s.c_str());
+}
+
 int main(int argc, char**argv)
 {
 	//scene = new Scene();
@@ -47,7 +70,7 @@ int main(int argc, char**argv)
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
 	glutInitWindowSize(RES_X, RES_Y);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("JAP Ray Tracing");
+	WindowHandle = glutCreateWindow("");
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glutReshapeFunc(reshape);
