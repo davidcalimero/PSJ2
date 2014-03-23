@@ -144,8 +144,14 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				std::istringstream vertice(line.substr(0));
 				vertice >> vertices.at(i).x >> vertices.at(i).y >> vertices.at(i).z;
 			}
-			Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
-			objects.push_back(poly);
+			if (nVertices == 3){
+				Triangle* triforce = new Triangle(vertices.at(0), vertices.at(1), vertices.at(2), properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+				objects.push_back(triforce);
+
+			}else{
+				Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+				objects.push_back(poly);
+			}
 		}
 	}
 

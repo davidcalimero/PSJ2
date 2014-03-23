@@ -88,6 +88,7 @@
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\Sphere.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
+    <ClCompile Include="..\src\Triangle.cpp" />
     <ClCompile Include="..\src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Plane.h" />
+    <ClInclude Include="..\src\Triangle.h" />
     <ClInclude Include="..\src\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Poly.h"
+#include "Triangle.h"
 
 class Scene {
 private:
