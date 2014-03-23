@@ -9,7 +9,7 @@
 #include "Scene.h"
 
 #define MAX_DEPTH 6
-#define N_THREADS 32
+#define N_THREADS 8
 
 Scene* scene;
 int RES_X, RES_Y;
