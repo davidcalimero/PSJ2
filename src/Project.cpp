@@ -82,7 +82,7 @@ void drawScene() {
 			//Pinta o pixel
 			glBegin(GL_POINTS);
 			glColor3f(buffer[y][x].x, buffer[y][x].y, buffer[y][x].z);
-			glVertex2f(x, y);
+			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
 			glFlush();
 		}
@@ -168,24 +168,24 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 			pointB = point;
 			normalB = normal;
 			oB = (Object*)(*it);
-		}
-	}
 
-	//Calcular Raios Sombra
-	std::vector<Light*> lights = scene->GetLights();
-	if (lights.size() > 0) color = glm::vec3(0);
-	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
-		glm::vec3 L = glm::normalize((*il)->position - pointB);
-		if (glm::dot(L, normalB) > 0){
-			Ray shadow;
-			//Margem de erro para o caso do raio trespassar a esfera 
-			shadow.O = pointB + 0.001f*L;
-			shadow.D = L;
+			//Calcular Raios Sombra
+			std::vector<Light*> lights = scene->GetLights();
+			if (lights.size() > 0) color = glm::vec3(0);
+			for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
+				glm::vec3 L = glm::normalize((*il)->position - pointB);
+				if (glm::dot(L, normalB) > 0){
+					Ray shadow;
+					//Margem de erro para o caso do raio trespassar a esfera 
+					shadow.O = pointB + 0.001f*L;
+					shadow.D = L;
 
-			//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
-			if (isAffectedByLight(shadow)){
-				glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - pointB));
-				color += oB->Get_k_constants().x * (*il)->color * oB->GetFillColor() * glm::dot(L, normalB) + oB->Get_k_constants().y * (*il)->color * oB->GetFillColor() * pow(glm::dot(H, normalB), oB->Get_k_constants().z);
+					//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
+					if (isAffectedByLight(shadow)){
+						glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - pointB));
+						color += oB->Get_k_constants().x * (*il)->color * oB->GetFillColor() * glm::dot(L, normalB) + oB->Get_k_constants().y * (*il)->color * oB->GetFillColor() * pow(glm::dot(H, normalB), oB->Get_k_constants().z);
+					}
+				}
 			}
 		}
 	}

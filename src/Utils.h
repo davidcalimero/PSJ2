@@ -48,5 +48,4 @@ typedef struct {
 namespace Utils {
 
 	float norma(glm::vec3 v);
-	//bool loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects);
 }

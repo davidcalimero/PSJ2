@@ -21,6 +21,17 @@ Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float near
 	_xe = glm::cross(_up, _ze) / Utils::norma(glm::cross(_up, _ze));
 	_ye = glm::cross(_ze, _xe);
 
+
+	// Show Camera values (DEBUG)
+	/** /
+	std::cout 	<< "viewport:" << std::endl
+	<< "from (" << from.x << "," << from.y << "," << from.z << ") " << std::endl
+	<< "at (" << at.x << "," << at.y << "," << at.z << ") " << std::endl
+	<< "up (" << up.x << "," << up.y << "," << up.z << ") " << std::endl
+	<< "with angle " << fovy << std::endl
+	<< "hither " << near << std::endl
+	<< "and resolution (" << ResX << "," << ResY << ") " << std::endl;
+	/**/
 }
 
 

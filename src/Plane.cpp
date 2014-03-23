@@ -10,6 +10,14 @@ Plane::Plane(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_color, glm
 
 	//Normal do plano
 	_normal = glm::normalize(glm::cross(_v3 - _v2, _v1 - _v2));
+
+	//Mostra se a criacao do plano foi bem feita (DEBUG)
+	/** /
+	std::cout 	<< "Plane defined by:" << std::endl
+	<< " - P1 (" << _v1.x << "," << _v1.y << "," << _v1.z << ") " << std::endl
+	<< " - P2 (" << _v2.x << "," << _v2.y << "," << _v2.z << ") " << std::endl
+	<< " - P3 (" << _v3.x << "," << _v3.y << "," << _v3.z << ") " << std::endl;
+	/**/
 }
 
 //Calcula a interseccao do raio com um plano

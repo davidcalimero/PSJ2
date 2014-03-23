@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
+    <ClCompile Include="..\src\Poly.cpp" />
     <ClCompile Include="..\src\Project.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\Sphere.cpp" />
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Object.h" />
+    <ClInclude Include="..\src\Poly.h" />
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Plane.h" />

@@ -1,10 +1,12 @@
 #include "Sphere.h"
 
 
-
 Sphere::Sphere(glm::vec3 centro, float raio, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction){
 	_centro = centro;
 	_raio = raio;
+
+	// Mostrar se a esfera esta a ser bem criada (DEBUG)
+	//std::cout << "sphere: center in (" << _centro.x << "," << _centro.y << "," << _centro.z << ") and with radius " << _raio << std::endl;
 }
 
 bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){

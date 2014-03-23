@@ -22,8 +22,9 @@ bool Scene::loadNFF(char* filename){
 	bool result = loadNFF(filename, from, at, up, angle, hither, resolution, _bckg_color, _lights, _objects);
 
 	if (!result) return result;
-	_camera = new Camera(from, at, up, angle, 0, 0, resolution.x, resolution.y);
+	_camera = new Camera(from, at, up, angle, 0, 0, (int)resolution.x, (int)resolution.y);
 
+	return true;
 }
 
 std::vector<Object*> Scene::GetObjects(){
@@ -34,61 +35,51 @@ std::vector<Light*> Scene::GetLights(){
 	return _lights;
 }
 
+void Scene::printPropertiesValues(Properties* properties){
+	std::cout 	<< "Mudanca de Properties:" << std::endl
+	<< "Color (" << properties->fill_color.x << "," << properties->fill_color.y << "," << properties->fill_color.z << ") " << std::endl
+	<< "Kd " << properties->k_constants.x << ", Ks " << properties->k_constants.y << ", shininess " << properties->k_constants.z << std::endl
+	<< "transmittance " << properties->transmittance << " and index of refraction " << properties->indexRefraction << std::endl;
+}
+
+void Scene::showFinalValues(){
+	// Show Background Color
+	std::cout << "background Color: (" << _bckg_color.x << "," << _bckg_color.y << "," << _bckg_color.z << ")" << std::endl;
+
+	// Show Light values
+	int i = 1;
+	for (std::vector<Light*>::iterator it = _lights.begin(); it != _lights.end(); it++){
+		std::cout << "light nr " << i;
+		std::cout << " with position: (" << (*it)->position.x << "," << (*it)->position.y << "," << (*it)->position.z << ")";
+		std::cout << " and color: (" << (*it)->color.x << "," << (*it)->color.y << "," << (*it)->color.z << ")" << std::endl;
+		i++;
+	}
+}	
+
 bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects){
-
-	//DEBUG ISSUES
-	/** /
-	// Camera
-	glm::vec3 from;
-	glm::vec3 at;
-	glm::vec3 up;
-	float angle;
-	float hither;
-	glm::vec2 resolution;
-
-	// Light
-	std::vector<Light*> lights;
-
-	// Spheres
-	std::vector<Sphere*> spheres;
-
-	// Triangles
-	std::vector<Triangle*> triangles;
-	/**/
 
 	// Fill Color and shading variables
 	Properties* properties;
 
+	// Load file
 	std::ifstream in(filename, std::ios::in);
 	if (!in){
 		std::cerr << "Cannot open " << filename << std::endl;
 		return false;
 	}
 
+	// Parse the file
 	std::string line;
 	while (getline(in, line)) {
 		if (line.substr(0, 2) == "b "){
 			std::istringstream s(line.substr(2));
 			s >> bckg_color.x >> bckg_color.y >> bckg_color.z;
-			// DEBUG
-			/** /
-			std::cout << "background_color: (" << bckg_color.x << "," << bckg_color.y << "," << bckg_color.z << ")" << std::endl;
-			/**/
 		}
 		else if (line.substr(0, 2) == "l "){
 			Light* light = (Light*)malloc(sizeof(Light));
 			std::istringstream s(line.substr(2));
 			s >> light->position.x >> light->position.y >> light->position.z;
-			// DEBUG
-			/** /
-			std::cout << "luz-posicao: (" << light->position.x << "," << light->position.y << "," << light->position.z << ")" << std::endl;
-			/**/
-			// color -- incomplete (pode n aparecer)
 			s >> light->color.x >> light->color.y >> light->color.z;
-			// DEBUG
-			/** /
-			std::cout << "luz-cor: (" << light->color.x << "," << light->color.y << "," << light->color.z << ")" << std::endl;
-			/**/
 			lights.push_back(light);
 		}
 		else if (line.substr(0, 2) == "s "){
@@ -99,10 +90,6 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			s >> center.x >> center.y >> center.z >> radius;
 			Sphere* sphere = new Sphere(center, radius, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
 			objects.push_back(sphere);
-			// DEBUG
-			/** /
-			std::cout << "sphere: center in (" << sphere->center.x << "," << sphere->center.y << "," << sphere->center.z << ") and with radius " << sphere->radius << std::endl;
-			/**/
 		}
 		else if (line.substr(0, 5) == "from ") {
 			std::istringstream s(line.substr(5));
@@ -131,16 +118,10 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 		else if (line.substr(0, 2) == "f ") {
 			properties = (Properties*)malloc(sizeof(Properties));
 			std::istringstream s(line.substr(2));
-			s >> properties->fill_color.x >> properties->fill_color.y >> properties->fill_color.z
+			s	>> properties->fill_color.x >> properties->fill_color.y >> properties->fill_color.z
 				>> properties->k_constants.x >> properties->k_constants.y >> properties->k_constants.z
 				>> properties->transmittance >> properties->indexRefraction;
-			// DEBUG
-			/** /
-			std::cout 	<< " Mudanca de Properties:" << std::endl
-			<< "Color (" << properties->fill_color.x << "," << properties->fill_color.y << "," << properties->fill_color.z << ") " << std::endl
-			<< "Kd " << properties->k_constants.x << ", Ks" << properties->k_constants.y << ", shininess " << properties->k_constants.z << ") " << std::endl
-			<< "transmittance " << properties->transmittance << " and index of refraction " << properties->indexRefraction << std::endl;
-			/**/
+			//printPropertiesValues(properties);
 		}
 		else if (line.substr(0, 3) == "pl ") {
 
@@ -150,35 +131,25 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				>> p2.x >> p2.y >> p2.z
 				>> p3.x >> p3.y >> p3.z;
 			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
-			// DEBUG
-			/** /
-			std::cout 	<< "Triangle:" << std::endl
-			<< "P1 (" << triangle->p1.x << "," << triangle->p1.y << "," << triangle->p1.z << ") " << std::endl
-			<< "P2 (" << triangle->p2.x << "," << triangle->p2.y << "," << triangle->p2.z << ") " << std::endl
-			<< "P3 (" << triangle->p3.x << "," << triangle->p3.y << "," << triangle->p3.z << ") " << std::endl;
-			/**/
 			objects.push_back(plane);
 		}
+		else if (line.substr(0, 2) == "p ") {
+			int nVertices;
+			std::istringstream s(line.substr(2));
+			s >> nVertices;
+			glm::vec3 t(0.0);
+			std::vector<glm::vec3> vertices(nVertices, t);
+			for (int i = 0; i < nVertices; i++){
+				getline(in, line);
+				std::istringstream vertice(line.substr(0));
+				vertice >> vertices.at(i).x >> vertices.at(i).y >> vertices.at(i).z;
+			}
+			Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			objects.push_back(poly);
+		}
 	}
-	// DEBUG
-	/** /
-	std::cout 	<< "viewport:" << std::endl
-	<< "from (" << from.x << "," << from.y << "," << from.z << ") " << std::endl
-	<< "at (" << at.x << "," << at.y << "," << at.z << ") " << std::endl
-	<< "up (" << up.x << "," << up.y << "," << up.z << ") " << std::endl
-	<< "with angle " << angle << std::endl
-	<< "hither " << hither << std::endl
-	<< "and resolution (" << resolution.x << "," << resolution.y << ") " << std::endl;
-	/** /
-	for (std::vector<Sphere*>::iterator it = spheres.begin(); it != spheres.end(); ++it){
-	std::cout << "sphere: center in (" << (*it)->center.x << "," << (*it)->center.y << "," << (*it)->center.z << ") and with radius " << (*it)->radius << std::endl;
-	std::cout << "Sphere:" << std::endl
-	<< "Properties"  << std::endl
-	<< "Color (" << (*it)->properties.fill_color.x << "," << (*it)->properties.fill_color.y << "," << (*it)->properties.fill_color.z << ") " << std::endl
-	<< "Kd " << (*it)->properties.k_constants.x << ", Ks " << (*it)->properties.k_constants.y << ", shininess " << (*it)->properties.k_constants.z << ") " << std::endl
-	<< "transmittance " << (*it)->properties.transmittance << " and index of refraction " << (*it)->properties.indexRefraction << std::endl;
-	}
-	/**/
 
+	//showFinalValues();
 	return true;
 }
+
