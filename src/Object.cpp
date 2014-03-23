@@ -18,3 +18,11 @@ glm::vec3 Object::GetFillColor(){
 glm::vec3 Object::Get_k_constants(){
 	return _k_constants;
 }
+
+float Object::getTransmittance(){
+	return _transmittance;
+}
+
+float Object::getRefractionIndex(){
+	return _indexRefraction;
+}

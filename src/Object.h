@@ -20,5 +20,7 @@ public:
 
 	glm::vec3 GetFillColor();
 	glm::vec3 Get_k_constants();
+	float getTransmittance();
+	float getRefractionIndex();
 
 };
