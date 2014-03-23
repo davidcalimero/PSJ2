@@ -9,24 +9,23 @@
 #include "Scene.h"
 
 #define MAX_DEPTH 6
+#define N_THREADS 32
 
 Scene* scene;
 int RES_X, RES_Y;
 float Loading = 0;
 int WindowHandle = 0;
-float matrix[512][512][3];
+std::vector<std::vector<glm::vec3>> buffer;
+std::vector<std::thread> threads;
 
 glm::vec3 rayTracing(Ray ray, int depth, int ior);
 
-void paint(int xi, int yi, int w, int h)
+void sendRay(int xi, int yi, int w, int h)
 {
 	for (int y = yi; y < yi+h; y++) {
 		for (int x = xi; x < xi+w; x++) {
 			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
-			glm::vec3 color = rayTracing(ray, 1, 1);
-			matrix[y][x][0] = color.x;
-			matrix[y][x][1] = color.y;
-			matrix[y][x][2] = color.z;
+			buffer[y][x] = rayTracing(ray, 1, 1);
 		}
 	}
 }
@@ -39,6 +38,16 @@ void loading_print() {
 	std::string s = oss.str();
 	glutSetWindow(WindowHandle);
 	glutSetWindowTitle(s.c_str());
+}
+
+
+void createThreadsAndJoin(){
+	threads.clear();
+	for (int i = 0; i < N_THREADS; i++)
+		threads.push_back(std::thread(sendRay, i * RES_X / N_THREADS, 0, RES_Y / N_THREADS, 512));
+
+	for (int i = 0; i < N_THREADS; i++)
+		threads[i].join();
 }
 
 
@@ -56,22 +65,9 @@ void reshape(int w, int h) {
 
 // Draw function by primary ray casting from the eye towards the scene's objects
 void drawScene() {
-	std::thread t1(paint, 0, 0, 64, 64);
-	std::thread t2(paint, 64, 0, 64, 512);
-	std::thread t3(paint, 128, 0, 64, 512);
-	std::thread t4(paint, 192, 0, 64, 512);
-	std::thread t5(paint, 256, 0, 64, 512);
-	std::thread t6(paint, 320, 0, 64, 512);
-	std::thread t7(paint, 384, 0, 64, 512);
-	std::thread t8(paint, 448, 0, 64, 512);
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
+
+	createThreadsAndJoin();
+
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
 
@@ -79,7 +75,7 @@ void drawScene() {
 			loading_print();
 
 			glBegin(GL_POINTS);
-			glColor3f(matrix[y][x][0], matrix[y][x][1], matrix[y][x][2]);
+			glColor3f(buffer[y][x].x, buffer[y][x].y, buffer[y][x].z);
 			glVertex2f(x, y);
 			glEnd();
 			glFlush();
@@ -96,6 +92,13 @@ int main(int argc, char**argv) {
 	if (!(scene->loadNFF("test.nff"))) return 0;
 	RES_X = scene->GetCamera()->GetResX();
 	RES_Y = scene->GetCamera()->GetResY();
+
+	//Resize buffer
+	buffer.resize(RES_Y);
+	for (int i = 0; i < RES_Y; ++i) {
+		buffer[i].resize(RES_X);
+	}
+
 	std::cout << "Resolution: " << RES_X << " X " << RES_Y << std::endl;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
