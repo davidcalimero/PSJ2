@@ -14,6 +14,7 @@ Scene* scene;
 int RES_X, RES_Y;
 float Loading = 0;
 int WindowHandle = 0;
+float matrix[512][512][3];
 
 glm::vec3 rayTracing(Ray ray, int depth, int ior);
 
@@ -21,12 +22,11 @@ void paint(int xi, int yi, int w, int h)
 {
 	for (int y = yi; y < yi+h; y++) {
 		for (int x = xi; x < xi+w; x++) {
-			glBegin(GL_POINTS);
-			glColor3f(1, 0, 0);
-			glVertex2f(x, y);
-			glEnd();
-			std::cout << "painted: " << x << " " << y << std::endl;
-			glFlush();
+			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
+			glm::vec3 color = rayTracing(ray, 1, 1);
+			matrix[y][x][0] = color.x;
+			matrix[y][x][1] = color.y;
+			matrix[y][x][2] = color.z;
 		}
 	}
 }
@@ -56,40 +56,37 @@ void reshape(int w, int h) {
 
 // Draw function by primary ray casting from the eye towards the scene's objects
 void drawScene() {
-	std::thread t1(paint, 0, 0, 64, 512);
-	/*std::thread t2(paint, 64, 0, 64, 512);
+	std::thread t1(paint, 0, 0, 64, 64);
+	std::thread t2(paint, 64, 0, 64, 512);
 	std::thread t3(paint, 128, 0, 64, 512);
 	std::thread t4(paint, 192, 0, 64, 512);
 	std::thread t5(paint, 256, 0, 64, 512);
 	std::thread t6(paint, 320, 0, 64, 512);
 	std::thread t7(paint, 384, 0, 64, 512);
-	std::thread t8(paint, 448, 0, 64, 512);*/
+	std::thread t8(paint, 448, 0, 64, 512);
 	t1.join();
-/*	t2.join();
+	t2.join();
 	t3.join();
 	t4.join();
 	t5.join();
 	t6.join();
 	t7.join();
-	t8.join();*/
-/*	for (int y = 0; y < RES_Y; y++) {
+	t8.join();
+	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
-			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
-			//Color color = rayTracing(ray, 1, 1.0); //depth=1, ior=1.0
-			glm::vec3 color = rayTracing(ray, 1, 1);
 
 			Loading = (x + 1 + y*(RES_X)) / (float)(RES_X * RES_Y) * 100.0f;
 			loading_print();
 
 			glBegin(GL_POINTS);
-			glColor3f(color.x, color.y, color.z);
+			glColor3f(matrix[y][x][0], matrix[y][x][1], matrix[y][x][2]);
 			glVertex2f(x, y);
 			glEnd();
 			glFlush();
 		}
-	}*/
+	}
 
-	//std::cout << "Terminou!" << std::endl;
+	std::cout << "Terminou!" << std::endl;
 }
 
 
