@@ -22,7 +22,7 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	//Se o raio apontar para o sentido contrário a localizacao da esfera retornar false
 	if (doc2 > (_raio * _raio) && B < 0) return false;
 
-	float R = B * B - doc2 + _raio * _raio;
+	float R = (B * B) - doc2 + (_raio * _raio);
 	if (R < 0) return false;
 
 	float ti;
@@ -38,7 +38,10 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	normal.x = (point.x - _centro.x) / _raio;
 	normal.y = (point.y - _centro.y) / _raio;
 	normal.z = (point.z - _centro.z) / _raio;
-	
+
 	normal = glm::normalize(normal);
+
+	if (doc2 < _raio * _raio) normal *= -1;
+
 	return true;
 }

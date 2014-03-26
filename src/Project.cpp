@@ -1,6 +1,7 @@
 #include <GL/glut.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <iomanip>
 #include <glm.hpp>
 #include <vector>
@@ -8,9 +9,10 @@
 
 #include "Scene.h"
 
-#define MAX_DEPTH 6
-#define N_THREADS 8
+#define MAX_DEPTH 2
+#define N_THREADS 1
 
+std::ofstream myfile;
 Scene* scene;
 int RES_X, RES_Y; //resolucao do ecra
 float Loading = 0; //% de carregamento
@@ -22,12 +24,16 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior);
 
 void sendRay(int xi, int yi, int w, int h)
 {
+	myfile.open("example.txt");
 	for (int y = yi; y < yi+h; y++) {
 		for (int x = xi; x < xi+w; x++) {
 			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
 			buffer[y][x] = rayTracing(ray, 1, 1);
+			if (buffer[y][x].x < 0.2 && buffer[y][x].y < 0.2 && buffer[y][x].z < 0.2)
+				myfile << "in point (" << x << "," << y << "), there is a color close to black, that is: (" << buffer[y][x].x << "," << buffer[y][x].y << "," << buffer[y][x].z << ")" << std::endl;
 		}
 	}
+	myfile.close();
 }
 
 //Imprime no cabecalho da janela a percentagem de carregamento da imagem
@@ -94,10 +100,10 @@ void drawScene() {
 
 
 int main(int argc, char**argv) {
-
+	
 	scene = new Scene();
 	//Se nao conseguir ler o ficheiro termina
-	if (!(scene->loadNFF("scenes/mount_low.nff"))) return 0;
+	if (!(scene->loadNFF("scenes/simpleTest.nff"))) return 0;
 	
 	//Actualiza resolucao da janela
 	RES_X = scene->GetCamera()->GetResX();
@@ -145,7 +151,6 @@ bool isAffectedByLight(Ray ray){
 //Ray Tracing
 glm::vec3 rayTracing(Ray ray, int depth, int ior){
 
-	
 	std::vector<Object*> objs = scene->GetObjects();
 	float nearestPoint = -1;
 	glm::vec3 color = scene->GetBckgColor();
@@ -160,7 +165,7 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 		glm::vec3 normal;
 		bool intercept = ((Object*)(*it))->rayInterception(ray, point, normal);
 		float dist = glm::distance(ray.O, point);
-		
+
 		//Se estiver mais proximo actulizar valores
 		if ((nearestPoint == -1 || dist < nearestPoint) && intercept){
 			nearestPoint = dist;
@@ -169,75 +174,108 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 			normalB = normal;
 			oB = (Object*)(*it);
 
-			//Calcular Raios Sombra
-			std::vector<Light*> lights = scene->GetLights();
-			if (lights.size() > 0) color = glm::vec3(0);
-			for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
-				glm::vec3 L = glm::normalize((*il)->position - pointB);
-				if (glm::dot(L, normalB) > 0){
-					Ray shadow;
-					//Margem de erro para o caso do raio trespassar a esfera 
-					shadow.O = pointB + 0.001f*L;
-					shadow.D = L;
-
-					//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
-					if (isAffectedByLight(shadow)){
-						glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - pointB));
-						color += oB->Get_k_constants().x * (*il)->color * oB->GetFillColor() * glm::dot(L, normalB) + oB->Get_k_constants().y * (*il)->color * oB->GetFillColor() * pow(glm::dot(H, normalB), oB->Get_k_constants().z);
-					}
-				}
+			if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1){
+				myfile << "deu erro no fillcolor" << std::endl;
 			}
-
-			// Verificar se esta no depth maximo
-			if (depth >= MAX_DEPTH) return color;
-
-			// Calcular Raios de Reflexao
-			/**/
-			if (oB->Get_k_constants().y != 0){
-				glm::vec3 E = ray.D;
-				glm::vec3 R = E - (2 * glm::dot(E, normalB) * normalB);
-				Ray reflected_ray;
-				reflected_ray.O = pointB + 0.001f*R;
-				reflected_ray.D = R;
-				glm::vec3 reflected_color;
-				reflected_color = rayTracing(reflected_ray, depth + 1, ior);
-
-				reflected_color *= oB->Get_k_constants().y;
-				color += reflected_color;
-			}
-			/**/
-			// Calcular Raios de Refraccao
-			if (oB->getTransmittance() != 0){
-				// Ver questão do sinal do ray.D
-				glm::vec3 vt = glm::dot(-ray.D, normalB) * normalB + ray.D;
-				float sin_teta_i = Utils::norma(vt);
-				// Ver se está dentro ou fora do objecto
-				float sin_teta_t;
-				float new_reflected_index;
-				if (ior != 1){ //dentro do objecto
-					new_reflected_index = 1; 
-					sin_teta_t = ior / 1 * sin_teta_i; 
-				}
-				else {
-					new_reflected_index = oB->getRefractionIndex();
-					sin_teta_t = ior / new_reflected_index * sin_teta_i;
-				}
-				float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
-				glm::vec3 t = glm::normalize(vt);
-				glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
-				
-				Ray refracted_ray;
-				refracted_ray.O = pointB + 0.001f*rt;
-				refracted_ray.D = rt;
-				glm::vec3 refracted_color;
-				refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
-
-				refracted_color *= oB->getTransmittance();
-				color += refracted_color;
-			}
-			/**/
 		}
 	}
 
+	if (nearestPoint == -1) return color;
+
+	//Calcular Raios Sombra
+	std::vector<Light*> lights = scene->GetLights();
+	if (lights.size() > 0) color = glm::vec3(0);
+	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
+		glm::vec3 L = glm::normalize((*il)->position - pointB);
+		if (glm::dot(L, normalB) > 0){
+			Ray shadow;
+			//Margem de erro para o caso do raio trespassar a esfera 
+			shadow.O = pointB + 0.001f*L;
+			shadow.D = L;
+
+			//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
+			if (isAffectedByLight(shadow)){
+				glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - pointB));
+				//glm::vec3 R = 2 * glm::dot(-ray.D,normalB)* normalB + ray.D;
+				color = color + (oB->Get_k_constants().x * (*il)->color * oB->GetFillColor() * glm::dot(L, normalB)) + 
+								(oB->Get_k_constants().y * (*il)->color * oB->GetFillColor() * pow(glm::dot(H, normalB), oB->Get_k_constants().z));
+			}
+			if (color.x <= 0 || color.y <= 0 || color.z <= 0){
+				myfile << "deu erro quando calcula a cor com a luz" << std::endl;
+				myfile << color.x << " " << color.y << " " << color.z << std::endl;
+			}
+		}
+		else if (color.x <= 0 || color.y <= 0 || color.z <= 0){
+			myfile << "deu erro se o dot > 0" << std::endl;
+			myfile << color.x << " " << color.y << " " << color.z << std::endl;
+		}
+	}
+
+	/**/
+	if (color.x <= 0 || color.y <= 0 || color.z <= 0){
+		myfile << "deu erro depois da luz" << std::endl;
+		myfile << color.x << " " << color.y << " " << color.z << std::endl;
+	}
+	/**/		
+
+	// Verificar se esta no depth maximo
+	if (depth >= MAX_DEPTH) return color;
+
+	// Calcular Raios de Reflexao
+	/**/
+	if (oB->Get_k_constants().y != 0){
+		glm::vec3 E = ray.D;
+		glm::vec3 R = E - (2 * glm::dot(E, normalB) * normalB);
+		Ray reflected_ray;
+		reflected_ray.O = pointB + 0.001f*R;
+		reflected_ray.D = R;
+		glm::vec3 reflected_color;
+		reflected_color = rayTracing(reflected_ray, depth + 1, ior);
+
+		reflected_color *= oB->Get_k_constants().y;
+		color += reflected_color;
+		if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1){
+			myfile << "deu erro depois da reflexao no depth " << depth+1 << std::endl;
+			myfile << reflected_color.x << " " << reflected_color.y << " " << reflected_color.z << std::endl;
+		}
+	}
+	/** /
+	if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1){
+		myfile << "deu erro depois da reflexao" << std::endl;
+		myfile << color.x << " " << color.y << " " << color.z << std::endl;
+	}
+	/**/
+
+	/**/
+	// Calcular Raios de Refraccao
+	if (oB->getTransmittance() != 0){
+		// Ver questão do sinal do ray.D
+		glm::vec3 vt = glm::dot(-ray.D, normalB) * normalB + ray.D;
+		float sin_teta_i = Utils::norma(vt);
+		// Ver se está dentro ou fora do objecto
+		float sin_teta_t;
+		float new_reflected_index;
+		if (ior != 1){ //dentro do objecto
+			new_reflected_index = 1; 
+			sin_teta_t = ior * sin_teta_i;
+		}
+		else {
+			new_reflected_index = oB->getRefractionIndex();
+			sin_teta_t = ior / new_reflected_index * sin_teta_i;
+		}
+		float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
+		glm::vec3 t = glm::normalize(vt);
+		glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normalB);
+				
+		Ray refracted_ray;
+		refracted_ray.O = pointB + 0.001f*rt;
+		refracted_ray.D = rt;
+		glm::vec3 refracted_color;
+		refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
+
+		refracted_color *= oB->getTransmittance();
+		color += refracted_color;
+	}
+	/**/
 	return color;
 }
