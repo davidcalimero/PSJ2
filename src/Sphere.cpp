@@ -27,7 +27,9 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 	float ti;
 	if (doc2 > (_raio * _raio)) ti = B - sqrt(R);
+	if (doc2 < (_raio * _raio) && getTransmittance() == 0.0f) return false;
 	if (doc2 < (_raio * _raio)) ti = B + sqrt(R);
+	
 
 	//Ponto de interseccao
 	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);

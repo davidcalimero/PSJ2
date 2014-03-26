@@ -84,10 +84,11 @@ void drawScene() {
 			glColor3f(buffer[y][x].x, buffer[y][x].y, buffer[y][x].z);
 			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
-			glFlush();
+			
 		}
+		glFlush();
 	}
-
+	
 	std::cout << "Terminou!" << std::endl;
 }
 
@@ -96,7 +97,7 @@ int main(int argc, char**argv) {
 
 	scene = new Scene();
 	//Se nao conseguir ler o ficheiro termina
-	if (!(scene->loadNFF("scenes/balls_medium.nff"))) return 0;
+	if (!(scene->loadNFF("scenes/mount_low.nff"))) return 0;
 	
 	//Actualiza resolucao da janela
 	RES_X = scene->GetCamera()->GetResX();
@@ -191,23 +192,24 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 			if (depth >= MAX_DEPTH) return color;
 
 			// Calcular Raios de Reflexao
-			if (((Object*)(*it))->Get_k_constants().y != 0){
+			/**/
+			if (oB->Get_k_constants().y != 0){
 				glm::vec3 E = ray.D;
-				glm::vec3 R = E - (2 * glm::dot(E, normal) * normal);
+				glm::vec3 R = E - (2 * glm::dot(E, normalB) * normalB);
 				Ray reflected_ray;
-				reflected_ray.O = point + 0.001f*R;
+				reflected_ray.O = pointB + 0.001f*R;
 				reflected_ray.D = R;
 				glm::vec3 reflected_color;
 				reflected_color = rayTracing(reflected_ray, depth + 1, ior);
 
-				reflected_color *= ((Object*)(*it))->Get_k_constants().y;
+				reflected_color *= oB->Get_k_constants().y;
 				color += reflected_color;
 			}
-
+			/**/
 			// Calcular Raios de Refraccao
-			if (((Object*)(*it))->getTransmittance() != 0){
+			if (oB->getTransmittance() != 0){
 				// Ver questão do sinal do ray.D
-				glm::vec3 vt = glm::dot(-ray.D, normal)* normal + ray.D;
+				glm::vec3 vt = glm::dot(-ray.D, normalB) * normalB + ray.D;
 				float sin_teta_i = Utils::norma(vt);
 				// Ver se está dentro ou fora do objecto
 				float sin_teta_t;
@@ -217,7 +219,7 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 					sin_teta_t = ior / 1 * sin_teta_i; 
 				}
 				else {
-					new_reflected_index = ((Object*)(*it))->getRefractionIndex();
+					new_reflected_index = oB->getRefractionIndex();
 					sin_teta_t = ior / new_reflected_index * sin_teta_i;
 				}
 				float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
@@ -225,14 +227,15 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 				glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
 				
 				Ray refracted_ray;
-				refracted_ray.O = point + 0.001f*rt;
+				refracted_ray.O = pointB + 0.001f*rt;
 				refracted_ray.D = rt;
 				glm::vec3 refracted_color;
 				refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
 
-				refracted_color *= ((Object*)(*it))->getTransmittance();
+				refracted_color *= oB->getTransmittance();
 				color += refracted_color;
 			}
+			/**/
 		}
 	}
 
