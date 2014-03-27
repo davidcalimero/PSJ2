@@ -5,7 +5,7 @@ Triangle::Triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_colo
 	_b = v2;
 	_c = v3;
 
-	_normal = - glm::normalize(glm::cross(_c - _a, _b - _a));
+	_normal = -glm::normalize(glm::cross(_c - _a, _b - _a));
 
 	//Mostra se o triangle foi bem criado (DEBUG)
 	/** /

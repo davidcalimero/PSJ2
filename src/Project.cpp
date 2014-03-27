@@ -85,7 +85,7 @@ Object * nearestIntersection(Ray ray, glm::vec3 &normal, glm::vec3 &point){
 
 
 //Ray Tracing
-glm::vec3 rayTracing(Ray ray, int depth, int ior){
+glm::vec3 rayTracing(Ray ray, int depth, float ior){
 	glm::vec3 normal;
 	glm::vec3 point;
 	glm::vec3 color(0);
@@ -99,6 +99,7 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 
 	//Se ainda nao atingimos o limite temos de calcular os raios secundarios
 	if (depth < MAX_DEPTH){
+		
 		/**/ // Calcular Raios de Reflexao
 		if (oB->Get_k_constants().y != 0){
 			glm::vec3 reflected_color;
@@ -109,32 +110,38 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 			reflected_color = rayTracing(reflected_ray, depth + 1, ior);
 			color += reflected_color * oB->Get_k_constants().y;
 		}
-
+		
 		/**/ // Calcular Raios de Refraccao
 		if (oB->getTransmittance() != 0){
 			glm::vec3 refracted_color;
-			// Ver questão do sinal do ray.D
+			
+			// Ver questão do sinal do ray.D	
 			glm::vec3 vt = glm::dot(-ray.D, normal) * normal + ray.D;
 			float sin_teta_i = Utils::norma(vt);
+			vt = glm::normalize(vt);
+			
 			// Ver se está dentro ou fora do objecto
 			float sin_teta_t;
 			float new_reflected_index;
-			
+
 			if (ior != 1) //de dentro para fora
 				new_reflected_index = 1;
 			else //de fora para dentro
 				new_reflected_index = oB->getRefractionIndex();
-			
-			sin_teta_t = ior / new_reflected_index * sin_teta_i;
-			float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
-			glm::vec3 t = glm::normalize(vt);
-			glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
 
-			Ray refracted_ray;
-			refracted_ray.O = point + 0.001f*rt;
-			refracted_ray.D = rt;
-			refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
-			color += refracted_color * oB->getTransmittance();
+			sin_teta_t = ior / new_reflected_index * sin_teta_i;
+				
+			if (sin_teta_t*sin_teta_t <= 1){
+				float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
+				glm::vec3 t = glm::normalize(vt);
+				glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
+				rt = glm::normalize(rt);
+				Ray refracted_ray;
+				refracted_ray.O = point + 0.001f*rt;
+				refracted_ray.D = rt;
+				refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
+				color += refracted_color * oB->getTransmittance();
+			}
 		}
 		/**/
 	}
