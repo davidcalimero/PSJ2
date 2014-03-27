@@ -17,6 +17,8 @@ int RES_X, RES_Y; //resolucao do ecra
 std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar
 std::vector<std::thread> threads; //threads que vao ser utilizadas
 
+glm::vec3 rayTracing(Ray ray, int depth, float ior);
+
 
 //Verifica se um raio em direcao a cada fonte de luz tem algum objecto pelo meio
 bool isAffectedByLight(Ray ray){
@@ -84,6 +86,56 @@ Object * nearestIntersection(Ray ray, glm::vec3 &normal, glm::vec3 &point){
 }
 
 
+//Calcular Raios de Reflexao
+void calculateReflection(Ray ray, Object * oB, glm::vec3 point, glm::vec3 normal, int depth, float ior, glm::vec3 &color){
+	if (oB->Get_k_constants().y != 0){
+		glm::vec3 reflected_color;
+		glm::vec3 R = ray.D - 2 * glm::dot(ray.D, normal) * normal;
+		Ray reflected_ray;
+		reflected_ray.O = point + 0.001f*R;
+		reflected_ray.D = R;
+		reflected_color = rayTracing(reflected_ray, depth + 1, ior);
+		color += reflected_color * oB->Get_k_constants().y;
+	}
+}
+
+
+//Calcular Raios de Refraccao
+void calculateRefraction(Ray ray, Object * oB, glm::vec3 point, glm::vec3 normal, int depth, float ior, glm::vec3 &color){
+	if (oB->getTransmittance() != 0){
+		glm::vec3 refracted_color;
+
+		// Ver questão do sinal do ray.D	
+		glm::vec3 vt = glm::dot(-ray.D, normal) * normal + ray.D;
+		float sin_teta_i = Utils::norma(vt);
+		vt = glm::normalize(vt);
+
+		// Ver se está dentro ou fora do objecto
+		float sin_teta_t;
+		float new_reflected_index;
+
+		if (ior != 1) //de dentro para fora
+			new_reflected_index = 1;
+		else //de fora para dentro
+			new_reflected_index = oB->getRefractionIndex();
+
+		sin_teta_t = ior / new_reflected_index * sin_teta_i;
+
+		if (sin_teta_t*sin_teta_t <= 1){
+			float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
+			glm::vec3 t = glm::normalize(vt);
+			glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
+			rt = glm::normalize(rt);
+			Ray refracted_ray;
+			refracted_ray.O = point + 0.001f*rt;
+			refracted_ray.D = rt;
+			refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
+			color += refracted_color * oB->getTransmittance();
+		}
+	}
+}
+
+
 //Ray Tracing
 glm::vec3 rayTracing(Ray ray, int depth, float ior){
 	glm::vec3 normal;
@@ -100,50 +152,15 @@ glm::vec3 rayTracing(Ray ray, int depth, float ior){
 	//Se ainda nao atingimos o limite temos de calcular os raios secundarios
 	if (depth < MAX_DEPTH){
 		
-		/**/ // Calcular Raios de Reflexao
-		if (oB->Get_k_constants().y != 0){
-			glm::vec3 reflected_color;
-			glm::vec3 R = ray.D - 2 * glm::dot(ray.D, normal) * normal;
-			Ray reflected_ray;
-			reflected_ray.O = point + 0.001f*R;
-			reflected_ray.D = R;
-			reflected_color = rayTracing(reflected_ray, depth + 1, ior);
-			color += reflected_color * oB->Get_k_constants().y;
-		}
-		
-		/**/ // Calcular Raios de Refraccao
-		if (oB->getTransmittance() != 0){
-			glm::vec3 refracted_color;
-			
-			// Ver questão do sinal do ray.D	
-			glm::vec3 vt = glm::dot(-ray.D, normal) * normal + ray.D;
-			float sin_teta_i = Utils::norma(vt);
-			vt = glm::normalize(vt);
-			
-			// Ver se está dentro ou fora do objecto
-			float sin_teta_t;
-			float new_reflected_index;
+		//Refleccao
+		glm::vec3 r1Color;
+		calculateReflection(ray, oB, point, normal, depth, ior, r1Color);
 
-			if (ior != 1) //de dentro para fora
-				new_reflected_index = 1;
-			else //de fora para dentro
-				new_reflected_index = oB->getRefractionIndex();
+		//Refraccao
+		glm::vec3 r2Color;
+		calculateRefraction(ray, oB, point, normal, depth, ior, r2Color);
 
-			sin_teta_t = ior / new_reflected_index * sin_teta_i;
-				
-			if (sin_teta_t*sin_teta_t <= 1){
-				float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
-				glm::vec3 t = glm::normalize(vt);
-				glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
-				rt = glm::normalize(rt);
-				Ray refracted_ray;
-				refracted_ray.O = point + 0.001f*rt;
-				refracted_ray.D = rt;
-				refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
-				color += refracted_color * oB->getTransmittance();
-			}
-		}
-		/**/
+		color += r1Color + r2Color;
 	}
 
 	//Cor final
