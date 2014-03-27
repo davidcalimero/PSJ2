@@ -16,6 +16,7 @@ Scene* scene;
 int RES_X, RES_Y; //resolucao do ecra
 std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar
 std::vector<std::thread> threads; //threads que vao ser utilizadas
+glm::vec3 at(1.0f, 0.0f, 0.0f); //Valores de atenuacao
 
 glm::vec3 rayTracing(Ray ray, int depth, float ior);
 
@@ -34,25 +35,27 @@ bool isAffectedByLight(Ray ray){
 }
 
 
-//Calcula a cor de reflexao e refracao
+//Calcular Raios Sombra
 glm::vec3 shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 	glm::vec3 color;
 
-	//Calcular Raios Sombra
 	std::vector<Light*> lights = scene->GetLights();
 	if (lights.size() > 0) color = glm::vec3(0);
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
 		glm::vec3 L = glm::normalize((*il)->position - point);
 		glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
-		if (glm::dot(L, normal) > 0 && glm::dot(H, normal) > 0){
+		float lightDist = glm::distance((*il)->position, point);
+		
+			if (glm::dot(L, normal) > 0 && glm::dot(H, normal) > 0){
 			Ray shadow;
 			//Margem de erro para o caso do raio trespassar a esfera 
 			shadow.O = point + 0.001f*L;
 			shadow.D = L;
 			//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
 			if (isAffectedByLight(shadow)){
+				float attenuation = 1.0f / (at.x + at.y * lightDist + at.z * lightDist * lightDist);
 				color += ((oB->Get_k_constants().x * glm::dot(L, normal)) +
-					(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z))) * (*il)->color * oB->GetFillColor();
+					(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * (*il)->color * oB->GetFillColor();
 			}
 		}
 	}
@@ -90,7 +93,7 @@ Object * nearestIntersection(Ray ray, glm::vec3 &normal, glm::vec3 &point){
 void calculateReflection(Ray ray, Object * oB, glm::vec3 point, glm::vec3 normal, int depth, float ior, glm::vec3 &color){
 	if (oB->Get_k_constants().y != 0){
 		glm::vec3 reflected_color;
-		glm::vec3 R = ray.D - 2 * glm::dot(ray.D, normal) * normal;
+		glm::vec3 R = ray.D - 2 * glm::dot(ray.D, normal) * normal; //Raio de reflexao
 		Ray reflected_ray;
 		reflected_ray.O = point + 0.001f*R;
 		reflected_ray.D = R;
@@ -108,7 +111,6 @@ void calculateRefraction(Ray ray, Object * oB, glm::vec3 point, glm::vec3 normal
 		// Ver questão do sinal do ray.D	
 		glm::vec3 vt = glm::dot(-ray.D, normal) * normal + ray.D;
 		float sin_teta_i = Utils::norma(vt);
-		vt = glm::normalize(vt);
 
 		// Ver se está dentro ou fora do objecto
 		float sin_teta_t;
@@ -119,12 +121,14 @@ void calculateRefraction(Ray ray, Object * oB, glm::vec3 point, glm::vec3 normal
 		else //de fora para dentro
 			new_reflected_index = oB->getRefractionIndex();
 
+		//Lei snell
 		sin_teta_t = ior / new_reflected_index * sin_teta_i;
 
+		//Se se verificar não houve reflexao perfeita
 		if (sin_teta_t*sin_teta_t <= 1){
 			float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
 			glm::vec3 t = glm::normalize(vt);
-			glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
+			glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal); //Raio de refraccao
 			rt = glm::normalize(rt);
 			Ray refracted_ray;
 			refracted_ray.O = point + 0.001f*rt;
@@ -154,11 +158,16 @@ glm::vec3 rayTracing(Ray ray, int depth, float ior){
 		
 		//Refleccao
 		glm::vec3 r1Color;
+		//std::thread t1(calculateReflection, ray, oB, point, normal, depth, ior, r1Color);
 		calculateReflection(ray, oB, point, normal, depth, ior, r1Color);
 
 		//Refraccao
 		glm::vec3 r2Color;
+		//std::thread t2(calculateRefraction, ray, oB, point, normal, depth, ior, r2Color);
 		calculateRefraction(ray, oB, point, normal, depth, ior, r2Color);
+
+		//t1.join();
+		//t2.join();
 
 		color += r1Color + r2Color;
 	}
@@ -221,9 +230,9 @@ void drawScene() {
 			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
 		}
-		glFlush();
 	}
 
+	glFlush();
 	std::cout << "Terminou!" << std::endl;
 }
 
@@ -233,7 +242,7 @@ int main(int argc, char**argv) {
 
 	scene = new Scene();
 	//Se nao conseguir ler o ficheiro termina
-	if (!(scene->loadNFF("scenes/mount_low.nff"))) return 0;
+	if (!(scene->loadNFF("scenes/simpleTest.nff"))) return 0;
 
 	//Actualiza resolucao da janela
 	RES_X = scene->GetCamera()->GetResX();

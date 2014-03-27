@@ -18,16 +18,10 @@ Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color,
 }
 
 bool Poly::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
-	// Insert code here :3
-	/**/
-	normal = -_normal;
-	//point = glm::vec3(0)
-	if (windingNumber(ray, point, normal))
+	if (windingNumber(ray, point, normal)){
+		normal = _normal;
 		return true;
-	/**/
-	
-	//normal = _normal;
-
+	}
 	return false;
 }
 

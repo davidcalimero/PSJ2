@@ -13,22 +13,24 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	
 	//Quadrado da distancia da origem do raio ao centro da esfera
 	float doc2 = (ray.O.x - _centro.x) * (ray.O.x - _centro.x) + (ray.O.y - _centro.y) * (ray.O.y - _centro.y) + (ray.O.z - _centro.z) * (ray.O.z - _centro.z);
-	
+	float r2 = _raio * _raio;
+
+
 	//Se a origem do raio estiver sobre a superficie da esfera retornar false
-	if (doc2 == (_raio * _raio)) return false;
+	if (doc2 == r2) return false;
 
 	float B = ray.D.x * (_centro.x - ray.O.x) + ray.D.y * (_centro.y - ray.O.y) + ray.D.z * (_centro.z - ray.O.z);
 	
 	//Se o raio apontar para o sentido contrário a localizacao da esfera retornar false
-	if (doc2 > (_raio * _raio) && B < 0) return false;
+	if (doc2 > r2 && B < 0) return false;
 
-	float R = (B * B) - doc2 + (_raio * _raio);
+	float R = (B * B) - doc2 + r2;
 	if (R < 0) return false;
 
 	float ti;
-	if (doc2 > (_raio * _raio)) ti = B - sqrt(R);
-	if (doc2 < (_raio * _raio) && getTransmittance() == 0.0f) return false;
-	if (doc2 < (_raio * _raio)) ti = B + sqrt(R);
+	if (doc2 >r2) ti = B - sqrt(R);
+	if (doc2 < r2 && getTransmittance() == 0.0f) return false;
+	if (doc2 < r2) ti = B + sqrt(R);
 	
 
 	//Ponto de interseccao
@@ -41,7 +43,7 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 	normal = glm::normalize(normal);
 
-	if (doc2 < _raio * _raio) normal *= -1;
+	if (doc2 < r2) normal *= -1;
 
 	return true;
 }
