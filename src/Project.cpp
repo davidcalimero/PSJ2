@@ -41,19 +41,20 @@ glm::vec3 shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 	if (lights.size() > 0) color = glm::vec3(0);
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
 		glm::vec3 L = glm::normalize((*il)->position - point);
-		if (glm::dot(L, normal) > 0){
+		glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
+		if (glm::dot(L, normal) > 0 && glm::dot(H, normal) > 0){
 			Ray shadow;
 			//Margem de erro para o caso do raio trespassar a esfera 
 			shadow.O = point + 0.001f*L;
 			shadow.D = L;
 			//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
 			if (isAffectedByLight(shadow)){
-				glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
-				color += ((oB->Get_k_constants().x * glm::dot(L, normal)) + 
-						  (oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z))) * (*il)->color * oB->GetFillColor();
+				color += ((oB->Get_k_constants().x * glm::dot(L, normal)) +
+					(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z))) * (*il)->color * oB->GetFillColor();
 			}
 		}
 	}
+
 	return color;
 }
 
@@ -100,30 +101,31 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 	if (depth < MAX_DEPTH){
 		/**/ // Calcular Raios de Reflexao
 		if (oB->Get_k_constants().y != 0){
+			glm::vec3 reflected_color;
 			glm::vec3 R = ray.D - 2 * glm::dot(ray.D, normal) * normal;
 			Ray reflected_ray;
 			reflected_ray.O = point + 0.001f*R;
 			reflected_ray.D = R;
-			color = rayTracing(reflected_ray, depth + 1, ior);
-			color *= oB->Get_k_constants().y;
+			reflected_color = rayTracing(reflected_ray, depth + 1, ior);
+			color += reflected_color * oB->Get_k_constants().y;
 		}
 
 		/**/ // Calcular Raios de Refraccao
 		if (oB->getTransmittance() != 0){
+			glm::vec3 refracted_color;
 			// Ver questão do sinal do ray.D
 			glm::vec3 vt = glm::dot(-ray.D, normal) * normal + ray.D;
 			float sin_teta_i = Utils::norma(vt);
 			// Ver se está dentro ou fora do objecto
 			float sin_teta_t;
 			float new_reflected_index;
-			if (ior != 1){ //dentro do objecto
+			
+			if (ior != 1) //de dentro para fora
 				new_reflected_index = 1;
-				sin_teta_t = ior * sin_teta_i;
-			}
-			else {
+			else //de fora para dentro
 				new_reflected_index = oB->getRefractionIndex();
-				sin_teta_t = ior / new_reflected_index * sin_teta_i;
-			}
+			
+			sin_teta_t = ior / new_reflected_index * sin_teta_i;
 			float cos_teta_t = sqrt(1 - (sin_teta_t * sin_teta_t));
 			glm::vec3 t = glm::normalize(vt);
 			glm::vec3 rt = sin_teta_t*t + cos_teta_t * (-normal);
@@ -131,8 +133,8 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 			Ray refracted_ray;
 			refracted_ray.O = point + 0.001f*rt;
 			refracted_ray.D = rt;
-			color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
-			color *= oB->getTransmittance();
+			refracted_color = rayTracing(refracted_ray, depth + 1, new_reflected_index);
+			color += refracted_color * oB->getTransmittance();
 		}
 		/**/
 	}
@@ -144,8 +146,8 @@ glm::vec3 rayTracing(Ray ray, int depth, int ior){
 
 //Enviar um raio
 void sendRay(int xi, int yi, int w, int h) {
-	for (int y = yi; y < yi+h; y++) {
-		for (int x = xi; x < xi+w; x++) {
+	for (int y = yi; y < yi + h; y++) {
+		for (int x = xi; x < xi + w; x++) {
 			Ray ray = scene->GetCamera()->PrimaryRay(x, y);
 			buffer[y][x] = rayTracing(ray, 1, 1);
 		}
@@ -156,8 +158,8 @@ void sendRay(int xi, int yi, int w, int h) {
 //Cria N_THREADS que vao utilizar a funcao sendRay e faz join a cada uma delas
 void createThreadsAndJoin(){
 	//Limpa o vector de threads
-	threads.clear();	
-	
+	threads.clear();
+
 	//Cria as threads
 	for (int i = 0; i < N_THREADS; i++)
 		threads.push_back(std::thread(sendRay, i * RES_X / N_THREADS, 0, RES_X / N_THREADS, RES_Y));
@@ -197,18 +199,18 @@ void drawScene() {
 		}
 		glFlush();
 	}
-	
+
 	std::cout << "Terminou!" << std::endl;
 }
 
 
 //MAIN
 int main(int argc, char**argv) {
-	
+
 	scene = new Scene();
 	//Se nao conseguir ler o ficheiro termina
-	if (!(scene->loadNFF("scenes/balls_low.nff"))) return 0;
-	
+	if (!(scene->loadNFF("scenes/mount_low.nff"))) return 0;
+
 	//Actualiza resolucao da janela
 	RES_X = scene->GetCamera()->GetResX();
 	RES_Y = scene->GetCamera()->GetResY();
@@ -220,7 +222,7 @@ int main(int argc, char**argv) {
 	}
 
 	std::cout << "Resolution: " << RES_X << " X " << RES_Y << std::endl;
-	
+
 	//Inicializacoes do OpenGL
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
