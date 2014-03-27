@@ -4,7 +4,7 @@ Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color,
 	_nVertices = nVertices;
 	_vertices = vertices;
 
-	_normal = -glm::normalize(glm::cross(vertices[2] - vertices[0], vertices[1] - vertices[0]));
+	_normal = glm::normalize(glm::cross(vertices[2] - vertices[1], vertices[0] - vertices[1]));
 
 	//Mostra se o poligono foi bem criado (DEBUG)
 	/** /
@@ -20,16 +20,18 @@ Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color,
 bool Poly::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	// Insert code here :3
 	/**/
-	if (windingNumber(ray))
+	normal = -_normal;
+	//point = glm::vec3(0)
+	if (windingNumber(ray, point, normal))
 		return true;
 	/**/
 	
-	normal = _normal;
+	//normal = _normal;
 
 	return false;
 }
 
-bool Poly::windingNumber(Ray ray){
+bool Poly::windingNumber(Ray ray, glm::vec3 &p, glm::vec3 &n){
 	int wn = 0;
 
 	//Calcular o ponto. se n intersectar, e' logo false, caso contrário calculamos o winding number
