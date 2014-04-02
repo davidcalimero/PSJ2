@@ -28,6 +28,9 @@
     <ClCompile Include="..\src\Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AABB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Camera.h">
@@ -54,13 +57,18 @@
     <ClInclude Include="..\src\Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\AABB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{d2fbd815-49be-46d7-bfa3-f832260fcc9d}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{df49ca90-f33d-4a21-baeb-1fb01594ead5}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
     </Filter>
   </ItemGroup>
 </Project>
