@@ -11,12 +11,14 @@
 
 #define MAX_DEPTH 6
 #define N_THREADS 8
+#define LIGHTS_AREA 8.0f
 
 Scene* scene;
 int RES_X, RES_Y; //resolucao do ecra
 std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar
 std::vector<std::thread> threads; //threads que vao ser utilizadas
 glm::vec3 at(1.0f, 0.0f, 0.0f); //Valores de atenuacao
+bool light_type_area = false;
 
 glm::vec3 rayTracing(Ray ray, int depth, float ior);
 
@@ -42,20 +44,49 @@ glm::vec3 shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 	std::vector<Light*> lights = scene->GetLights();
 	if (lights.size() > 0) color = glm::vec3(0);
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
-		glm::vec3 L = glm::normalize((*il)->position - point);
-		glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
-		float lightDist = glm::distance((*il)->position, point);
-		
+		// Normal Light -> Hard Shadows
+		if (!light_type_area){
+			glm::vec3 L = glm::normalize((*il)->position - point);
+			glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
+			float lightDist = glm::distance((*il)->position, point);
+
 			if (glm::dot(L, normal) > 0 && glm::dot(H, normal) > 0){
-			Ray shadow;
-			//Margem de erro para o caso do raio trespassar a esfera 
-			shadow.O = point + 0.001f*L;
-			shadow.D = L;
-			//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
-			if (isAffectedByLight(shadow)){
-				float attenuation = 1.0f / (at.x + at.y * lightDist + at.z * lightDist * lightDist);
-				color += ((oB->Get_k_constants().x * glm::dot(L, normal)) +
-					(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * (*il)->color * oB->GetFillColor();
+				Ray shadow;
+				//Margem de erro para o caso do raio trespassar a esfera 
+				shadow.O = point + 0.001f*L;
+				shadow.D = L;
+				//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
+				if (isAffectedByLight(shadow)){
+					float attenuation = 1.0f / (at.x + at.y * lightDist + at.z * lightDist * lightDist);
+					color += ((oB->Get_k_constants().x * glm::dot(L, normal)) +
+						(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * (*il)->color * oB->GetFillColor();
+				}
+			}
+		}
+		// Area Light -> Soft Shadows
+		else {
+			for (int x = -LIGHTS_AREA/2; x < LIGHTS_AREA/2; x++){
+				for (int y = -LIGHTS_AREA / 2; y < LIGHTS_AREA/2; y++){
+					glm::vec3 new_position = (*il)->position;
+					new_position.x += x;
+					new_position.y += y;
+					glm::vec3 L = glm::normalize(new_position - point);
+					glm::vec3 H = glm::normalize(L + glm::normalize(scene->GetCamera()->GetPos() - point));
+					float lightDist = glm::distance(new_position, point);
+
+					if (glm::dot(L, normal) > 0 && glm::dot(H, normal) > 0){
+						Ray shadow;
+						//Margem de erro para o caso do raio trespassar a esfera 
+						shadow.O = point + 0.001f*L;
+						shadow.D = L;
+						//Se nao existir um objecto em direcao a luz, calcular a cor do ponto com a respectiva luz
+						if (isAffectedByLight(shadow)){
+							float attenuation = 1.0f / (at.x + at.y * lightDist + at.z * lightDist * lightDist);
+							color += ((oB->Get_k_constants().x * glm::dot(L, normal)) +
+								(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * (*il)->color * oB->GetFillColor() / (LIGHTS_AREA * LIGHTS_AREA);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -242,7 +273,7 @@ int main(int argc, char**argv) {
 
 	scene = new Scene();
 	//Se nao conseguir ler o ficheiro termina
-	if (!(scene->loadNFF("scenes/simpleTest.nff"))) return 0;
+	if (!(scene->loadNFF("scenes/balls_low.nff"))) return 0;
 
 	//Actualiza resolucao da janela
 	RES_X = scene->GetCamera()->GetResX();
