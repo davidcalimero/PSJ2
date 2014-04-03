@@ -14,7 +14,7 @@ Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, f
 
 	//Inicializacao de variaveis utilizadas para calcular o raio principal
 	_d = Utils::norma(_eye - _at);
-	_h = (float) 2 * _d * tan(_fovy * PI/180.0f / 2.0f);
+	_h = 2.0f * _d * (float)tan(_fovy * PI/180.0f / 2.0f);
 	_w = (float)_ResX / _ResY * _h;
 
 	_ze = (_eye - _at) / _d;
