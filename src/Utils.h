@@ -19,7 +19,7 @@
 #define PI 3.14159265
 
 #define COLOR_THRESHOLD 0.3
-#define MAX_SAMPLING 2
+#define MAX_SAMPLING 1
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))

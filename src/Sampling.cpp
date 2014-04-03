@@ -7,12 +7,7 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector
 	//									|	   CP	   |
 	//							ponto 1	|______________| ponto 2
 
-	// Cor de cada canto do pixel
-	glm::vec3 colorP1;
-	glm::vec3 colorP2;
-	glm::vec3 colorP3;
-	glm::vec3 colorP4;
-	glm::vec3 color;
+	Ray ray;
 
 	// Encontrar as cores nos cantos do pixel em centralPoint
 	glm::vec2 point1 = glm::vec2(subpixel.x - (1 / pow(2, recursive)), subpixel.y - (1 / pow(2, recursive)));
@@ -20,30 +15,21 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector
 	glm::vec2 point3 = glm::vec2(subpixel.x - (1 / pow(2, recursive)), subpixel.y + (1 / pow(2, recursive)));
 	glm::vec2 point4 = glm::vec2(subpixel.x + (1 / pow(2, recursive)), subpixel.y + (1 / pow(2, recursive)));
 
-	//Primeiro nivel de recursividade -> não é necessario enviar mais raios primarios
-	/** /
-	if (recursive == 1){
-		colorP1 = buffer[(int)centralPoint.x][(int)centralPoint.y];
-		colorP2 = buffer[(int)centralPoint.x + 1][(int)centralPoint.y];
-		colorP3 = buffer[(int)centralPoint.x][(int)centralPoint.y + 1];
-		colorP4 = buffer[(int)centralPoint.x + 1][(int)centralPoint.y + 1];
-	}
-	/**/
-	
 	//Calcular a cor dos vários pontos
-	Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(point1.x, point1.y);
-	colorP1 = RayTracing::rayTracing(ray, 1, 1);
+	ray = Scene::getInstance().GetCamera()->PrimaryRay(point1.x, point1.y);
+	glm::vec3 colorP1 = RayTracing::rayTracing(ray, 1, 1);
 
 	ray = Scene::getInstance().GetCamera()->PrimaryRay(point2.x, point2.y);
-	colorP2 = RayTracing::rayTracing(ray, 1, 1);
+	glm::vec3 colorP2 = RayTracing::rayTracing(ray, 1, 1);
 
 	ray = Scene::getInstance().GetCamera()->PrimaryRay(point3.x, point3.y);
-	colorP3 = RayTracing::rayTracing(ray, 1, 1);
+	glm::vec3 colorP3 = RayTracing::rayTracing(ray, 1, 1);
 
 	ray = Scene::getInstance().GetCamera()->PrimaryRay(point4.x, point4.y);
-	colorP4 = RayTracing::rayTracing(ray, 1, 1);
+	glm::vec3 colorP4 = RayTracing::rayTracing(ray, 1, 1);
 
 	if (recursive < MAX_SAMPLING){
+		//Super Sampling
 		float diff12 = abs(colorP1.r - colorP2.r) + abs(colorP1.g - colorP2.g) + abs(colorP1.b - colorP2.b);
 		float diff13 = abs(colorP1.r - colorP3.r) + abs(colorP1.g - colorP3.g) + abs(colorP1.b - colorP3.b);
 		float diff24 = abs(colorP4.r - colorP2.r) + abs(colorP4.g - colorP2.g) + abs(colorP4.b - colorP2.b);
@@ -63,6 +49,7 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector
 			colorP4 = recursiveFill(p4, recursive + 1, buffer);
 		}
 	}
-	color = (colorP1 + colorP2 + colorP3 + colorP4) / 4.0f;
-	return color;
+
+	//Cor Final
+	return (colorP1 + colorP2 + colorP3 + colorP4) / 4.0f;
 }
