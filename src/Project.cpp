@@ -1,7 +1,8 @@
 #include "RayTracing.h"
+#include "Sampling.h"
 
 int RES_X, RES_Y; //resolucao do ecra
-std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar
+std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar - representa as cores DOS CANTOS dos pixeis
 std::vector<std::thread> threads; //threads que vao ser utilizadas
 
 
@@ -9,7 +10,7 @@ std::vector<std::thread> threads; //threads que vao ser utilizadas
 void sendRay(int xi, int yi, int w, int h) {
 	for (int y = yi; y < yi + h; y++) {
 		for (int x = xi; x < xi + w; x++) {
-			Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(x, y);
+			Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(x - 0.5, y - 0.5);
 			buffer[y][x] = RayTracing::rayTracing(ray, 1, 1);
 		}
 	}
@@ -23,7 +24,7 @@ void createThreadsAndJoin(){
 
 	//Cria as threads
 	for (int i = 0; i < N_THREADS; i++)
-		threads.push_back(std::thread(sendRay, i * RES_X / N_THREADS, 0, RES_X / N_THREADS, RES_Y));
+		threads.push_back(std::thread(sendRay, i * (RES_X + 1) / N_THREADS, 0, (RES_X + 1) / N_THREADS, RES_Y));
 
 	//Faz join
 	for (int i = 0; i < N_THREADS; i++)
@@ -48,13 +49,16 @@ void reshape(int w, int h) {
 void drawScene() {
 
 	//As threads vao actualizar o buffer com as respectivas cores
-	createThreadsAndJoin();
+	//createThreadsAndJoin();
 
+	//Sampling
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
+			//Calcula a cor do pixel
+			glm::vec3 color = Sampling::recursiveFill(glm::vec2(x,y), 1, buffer);
 			//Pinta o pixel
 			glBegin(GL_POINTS);
-			glColor3f(buffer[y][x].x, buffer[y][x].y, buffer[y][x].z);
+			glColor3f(color.r, color.g, color.b);
 			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
 		}
@@ -75,10 +79,10 @@ int main(int argc, char**argv) {
 	RES_X = Scene::getInstance().GetCamera()->GetResX();
 	RES_Y = Scene::getInstance().GetCamera()->GetResY();
 
-	//Resize buffer
-	buffer.resize(RES_Y);
-	for (int i = 0; i < RES_Y; ++i) {
-		buffer[i].resize(RES_X);
+	//Resize Buffer
+	buffer.resize(RES_Y + 1);
+	for (int i = 0; i < RES_Y + 1; ++i) {
+		buffer[i].resize(RES_X + 1);
 	}
 
 	std::cout << "Resolution: " << RES_X << " X " << RES_Y << std::endl;

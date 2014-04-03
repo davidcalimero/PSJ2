@@ -87,6 +87,7 @@
     <ClCompile Include="..\src\Poly.cpp" />
     <ClCompile Include="..\src\Project.cpp" />
     <ClCompile Include="..\src\RayTracing.cpp" />
+    <ClCompile Include="..\src\Sampling.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\Sphere.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="..\src\Object.h" />
     <ClInclude Include="..\src\Poly.h" />
     <ClInclude Include="..\src\RayTracing.h" />
+    <ClInclude Include="..\src\Sampling.h" />
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Plane.h" />
