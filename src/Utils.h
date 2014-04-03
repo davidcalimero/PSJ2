@@ -1,10 +1,20 @@
 #pragma once
 
+#include <GL/glut.h>
 #include <glm.hpp>
+#include <iomanip>
+#include <vector>
+#include <thread>
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+#define MAX_DEPTH 6
+#define N_THREADS 8
+#define LIGHTS_AREA 8.0f  //LIGHTS_AREA X LIGHTS_AREA
+
+#define LIGHT_TYPE true  //true -> Luz em area   false -> Luz em ponto
 
 #define PI 3.14159265
 
@@ -25,19 +35,6 @@ typedef struct {
 	float indexRefraction;
 } Properties;
 
-/** /
-typedef struct {
-	glm::vec3 p1, p2, p3;
-	Properties properties;
-} Triangle;
-
-
-typedef struct {
-	glm::vec3 center;
-	float radius;
-	Properties properties;
-} Sphere;
-/**/
 
 typedef struct {
 	glm::vec3 position;

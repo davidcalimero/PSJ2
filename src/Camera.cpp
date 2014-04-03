@@ -1,14 +1,14 @@
 #include "Camera.h"
 
 
-Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float near, float far, int ResX, int ResY){
+Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, float f, int ResX, int ResY){
 	//Inicializar variaveis
 	_eye = eye;
 	_at = at;
 	_up = up;
 	_fovy = fovy;
-	_near = near;
-	_far = far;
+	_near = n;
+	_far = f;
 	_ResX = ResX;
 	_ResY = ResY;
 

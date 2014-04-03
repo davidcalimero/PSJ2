@@ -18,7 +18,7 @@ private:
 	glm::vec3 _xe, _ye, _ze; //uvn frame 
 
 public:
-	Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float near, float far, int ResX, int ResY);
+	Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, float f, int ResX, int ResY);
 	~Camera();
 	int GetResX();
 	int GetResY();

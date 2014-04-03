@@ -3,6 +3,12 @@
 Scene::Scene(){}
 Scene::~Scene(){}
 
+//Retorna a instancia singleton de scene
+Scene& Scene::getInstance(){
+	static Scene  instance;
+	return instance;
+}
+
 glm::vec3 Scene::GetBckgColor(){
 	return _bckg_color;
 }
