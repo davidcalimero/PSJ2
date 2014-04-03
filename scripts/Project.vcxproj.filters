@@ -70,11 +70,11 @@
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{d2fbd815-49be-46d7-bfa3-f832260fcc9d}</UniqueIdentifier>
-      <Extensions>*.h</Extensions>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{df49ca90-f33d-4a21-baeb-1fb01594ead5}</UniqueIdentifier>
-      <Extensions>*.cpp</Extensions>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
 </Project>
