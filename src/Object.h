@@ -11,6 +11,7 @@ protected:
 	glm::vec3 _k_constants;
 	float _transmittance;
 	float _indexRefraction;
+	BoundingBox _box;
 
 public:
 	Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction);
@@ -20,5 +21,6 @@ public:
 	glm::vec3 Get_k_constants();
 	float getTransmittance();
 	float getRefractionIndex();
+	BoundingBox getBoundingBox();
 
 };

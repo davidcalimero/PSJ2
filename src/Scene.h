@@ -5,6 +5,7 @@
 #include "Plane.h"
 #include "Poly.h"
 #include "Triangle.h"
+#include "AABB.h"
 
 class Scene {
 private:

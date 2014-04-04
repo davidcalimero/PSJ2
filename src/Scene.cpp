@@ -139,6 +139,15 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
 			objects.push_back(plane);
 		}
+		else if (line.substr(0, 3) == "bb ") {
+
+			glm::vec3 p1, p2;
+			std::istringstream s(line.substr(3));
+			s >> p1.x >> p1.y >> p1.z
+				>> p2.x >> p2.y >> p2.z;
+			AABB* aabb = new AABB(p1, p2, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			objects.push_back(aabb);
+		}
 		else if (line.substr(0, 2) == "p ") {
 			int nVertices;
 			std::istringstream s(line.substr(2));
@@ -151,7 +160,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				vertice >> vertices.at(i).x >> vertices.at(i).y >> vertices.at(i).z;
 			}
 			if (nVertices == 3){
-				Triangle* triforce = new Triangle(vertices.at(0), vertices.at(1), vertices.at(2), properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+				Triangle* triforce = new Triangle(vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
 				objects.push_back(triforce);
 
 			}else{

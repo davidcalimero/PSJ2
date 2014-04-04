@@ -20,7 +20,7 @@ public:
 	~Camera();
 	int GetResX();
 	int GetResY();
-	Ray PrimaryRay(int x, int y);
+	Ray PrimaryRay(float x, float y);
 	glm::vec3 GetPos();
 
 };

@@ -9,7 +9,7 @@ std::vector<std::thread> threads; //threads que vao ser utilizadas
 void sendRay(int xi, int yi, int w, int h) {
 	for (int y = yi; y < yi + h; y++) {
 		for (int x = xi; x < xi + w; x++) {
-			Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(x - 0.5, y - 0.5);
+			Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(x - 0.5f, y - 0.5f);
 			buffer[y][x] = RayTracing::rayTracing(ray, 1, 1);
 		}
 	}
@@ -73,7 +73,7 @@ void drawScene() {
 int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
-	if (!(Scene::getInstance().loadNFF("scenes/balls_low.nff"))) return 0;
+	if (!(Scene::getInstance().loadNFF("scenes/aabb.nff"))) return 0;
 
 	//Actualiza resolucao da janela
 	RES_X = Scene::getInstance().GetCamera()->GetResX();

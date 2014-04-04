@@ -36,7 +36,7 @@ Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, f
 
 
 //Cria um raio que será lancado da posicao xy em coordenadas 
-Ray Camera::PrimaryRay(int x, int y){
+Ray Camera::PrimaryRay(float x, float y){
 	Ray r;
 	//Origem do raio
 	r.O = _eye;

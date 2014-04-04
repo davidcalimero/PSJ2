@@ -26,3 +26,7 @@ float Object::getTransmittance(){
 float Object::getRefractionIndex(){
 	return _indexRefraction;
 }
+
+BoundingBox Object::getBoundingBox(){
+	return _box;
+}

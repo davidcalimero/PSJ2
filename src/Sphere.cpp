@@ -5,6 +5,9 @@ Sphere::Sphere(glm::vec3 centro, float raio, glm::vec3 fill_color, glm::vec3 k_c
 	_centro = centro;
 	_raio = raio;
 
+	_box.pmin = centro - raio;
+	_box.pmax = centro + raio;
+
 	// Mostrar se a esfera esta a ser bem criada (DEBUG)
 	//std::cout << "sphere: center in (" << _centro.x << "," << _centro.y << "," << _centro.z << ") and with radius " << _raio << std::endl;
 }

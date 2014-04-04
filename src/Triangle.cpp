@@ -1,11 +1,30 @@
 #include "Triangle.h"
 
-Triangle::Triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction) {
-	_a = v1;
-	_b = v2;
-	_c = v3;
+Triangle::Triangle(std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction) {
+	_a = vertices[0];
+	_b = vertices[1];
+	_c = vertices[2];
 
 	_normal = -glm::normalize(glm::cross(_c - _a, _b - _a));
+
+	_box.pmin = vertices[0];
+	_box.pmax = vertices[0];
+	for (std::vector<glm::vec3>::iterator i; i != vertices.end(); i++){
+		if (_box.pmin.x > (*i).x)
+			_box.pmin.x = (*i).x;
+		if (_box.pmin.y > (*i).y)
+			_box.pmin.y = (*i).y;
+		if (_box.pmin.z > (*i).z)
+			_box.pmin.z = (*i).z;
+
+		if (_box.pmax.x < (*i).x)
+			_box.pmax.x = (*i).x;
+		if (_box.pmax.y < (*i).y)
+			_box.pmax.y = (*i).y;
+		if (_box.pmax.z < (*i).z)
+			_box.pmax.z = (*i).z;
+	}
+
 
 	//Mostra se o triangle foi bem criado (DEBUG)
 	/** /

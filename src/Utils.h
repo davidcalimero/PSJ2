@@ -47,6 +47,12 @@ typedef struct {
 } Light;
 
 
+typedef struct {
+	glm::vec3 pmin;
+	glm::vec3 pmax;
+} BoundingBox;
+
+
 namespace Utils {
 
 	float norma(glm::vec3 v);

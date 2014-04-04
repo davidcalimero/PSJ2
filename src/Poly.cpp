@@ -6,6 +6,24 @@ Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color,
 
 	_normal = glm::normalize(glm::cross(vertices[2] - vertices[1], vertices[0] - vertices[1]));
 
+	_box.pmin = vertices[0];
+	_box.pmax = vertices[0];
+	for (std::vector<glm::vec3>::iterator i; i != vertices.end(); i++){
+		if (_box.pmin.x > (*i).x)
+			_box.pmin.x = (*i).x;
+		if (_box.pmin.y > (*i).y)
+			_box.pmin.y = (*i).y;
+		if (_box.pmin.z > (*i).z)
+			_box.pmin.z = (*i).z;
+		
+		if (_box.pmax.x < (*i).x)
+			_box.pmax.x = (*i).x;
+		if (_box.pmax.y < (*i).y)
+			_box.pmax.y = (*i).y;
+		if (_box.pmax.z < (*i).z)
+			_box.pmax.z = (*i).z;
+	}
+
 	//Mostra se o poligono foi bem criado (DEBUG)
 	/** /
 	std::cout << "Polygon created with " << _nVertices << " vertexes: " << std::endl;
