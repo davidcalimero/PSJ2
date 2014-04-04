@@ -73,7 +73,7 @@ void drawScene() {
 int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
-	if (!(Scene::getInstance().loadNFF("scenes/aabb.nff"))) return 0;
+	if (!(Scene::getInstance().loadNFF("scenes/sas.nff"))) return 0;
 
 	//Actualiza resolucao da janela
 	RES_X = Scene::getInstance().GetCamera()->GetResX();

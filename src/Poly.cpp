@@ -8,7 +8,7 @@ Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color,
 
 	_box.pmin = vertices[0];
 	_box.pmax = vertices[0];
-	for (std::vector<glm::vec3>::iterator i; i != vertices.end(); i++){
+	for (std::vector<glm::vec3>::iterator i = vertices.begin(); i != vertices.end(); i++){
 		if (_box.pmin.x > (*i).x)
 			_box.pmin.x = (*i).x;
 		if (_box.pmin.y > (*i).y)
