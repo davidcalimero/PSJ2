@@ -3,19 +3,19 @@
 
 RegularGrid::RegularGrid(std::vector<Object*> objs){
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
-		BoundingBox* BBox = (*it)->getBoundingBox();
+		BoundingBox BBox = (*it)->getBoundingBox();
 		// Planes overrated -> remove from count
 		if (it == objs.begin()){
-			_min = BBox->pmin;
-			_max = BBox->pmax;
+			_min = BBox.pmin;
+			_max = BBox.pmax;
 		}
 		else {
-			if (_min.x > BBox->pmin.x) _min.x = BBox->pmin.x;
-			if (_min.y > BBox->pmin.y) _min.y = BBox->pmin.y;
-			if (_min.z > BBox->pmin.z) _min.z = BBox->pmin.z;
-			if (_max.x < BBox->pmax.x) _max.x = BBox->pmax.x;
-			if (_max.y < BBox->pmax.y) _max.y = BBox->pmax.y;
-			if (_max.z < BBox->pmax.z) _max.z = BBox->pmax.z;
+			if (_min.x > BBox.pmin.x) _min.x = BBox.pmin.x;
+			if (_min.y > BBox.pmin.y) _min.y = BBox.pmin.y;
+			if (_min.z > BBox.pmin.z) _min.z = BBox.pmin.z;
+			if (_max.x < BBox.pmax.x) _max.x = BBox.pmax.x;
+			if (_max.y < BBox.pmax.y) _max.y = BBox.pmax.y;
+			if (_max.z < BBox.pmax.z) _max.z = BBox.pmax.z;
 		}
 	}
 	
@@ -29,15 +29,15 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 
 	//Adicionamos os objectos as celulas respectivas
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
-		BoundingBox* BBox = (*it)->getBoundingBox();
+		BoundingBox BBox = (*it)->getBoundingBox();
 
-		int ixmin = CLAMP((BBox->pmin.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
-		int iymin = CLAMP((BBox->pmin.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
-		int izmin = CLAMP((BBox->pmin.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
+		int ixmin = CLAMP((BBox.pmin.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
+		int iymin = CLAMP((BBox.pmin.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
+		int izmin = CLAMP((BBox.pmin.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
 		
-		int ixmax = CLAMP((BBox->pmax.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
-		int iymax = CLAMP((BBox->pmax.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
-		int izmax = CLAMP((BBox->pmax.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
+		int ixmax = CLAMP((BBox.pmax.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
+		int iymax = CLAMP((BBox.pmax.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
+		int izmax = CLAMP((BBox.pmax.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
 
 		for (int z = izmin; z <= izmax; z++){
 			for (int y = iymin; y <= iymax; y++){
@@ -48,5 +48,9 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 			}
 		}
 	}
+
+	std::cout << "NX = " << _NX << "; NY = " << _NY << "; NZ = " << _NZ << std::endl;
+	std::cout << "min: (" << _min.x << ", " << _min.y << ", " << _min.z << ")" << std::endl;
+	std::cout << "max: (" << _max.x << ", " << _max.y << ", " << _max.z << ")" << std::endl;
 }
 

@@ -1,4 +1,5 @@
 #include "Sampling.h"
+#include "RegularGrid.h"
 
 int RES_X, RES_Y; //resolucao do ecra
 std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar - representa as cores DOS CANTOS dos pixeis
@@ -48,9 +49,10 @@ void reshape(int w, int h) {
 void drawScene() {
 
 	//As threads vao actualizar o buffer com as respectivas cores
-	createThreadsAndJoin();
+	//createThreadsAndJoin();
 
 	//Sampling
+	/** /
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
 			//Calcula a cor do pixel
@@ -63,6 +65,7 @@ void drawScene() {
 			glEnd();
 		}
 	}
+	/**/
 
 	glFlush();
 	std::cout << "Terminou!" << std::endl;
@@ -73,7 +76,9 @@ void drawScene() {
 int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
-	if (!(Scene::getInstance().loadNFF("scenes/sas.nff"))) return 0;
+	if (!(Scene::getInstance().loadNFF("scenes/balls_low.nff"))) return 0;
+
+	RegularGrid* grid = new RegularGrid(Scene::getInstance().GetObjects());
 
 	//Actualiza resolucao da janela
 	RES_X = Scene::getInstance().GetCamera()->GetResX();
