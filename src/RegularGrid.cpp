@@ -19,7 +19,7 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 		}
 	}
 	
-	//Depois disto, os valores mínimos e máximos estão feitos, e logo podemos calcular o tamanho da Grid.
+	//Depois disto, os valores minimos e maximos estao feitos, e logo podemos calcular o tamanho da Grid.
 	_NX = _max.x - _min.x;
 	_NY = _max.y - _min.y;
 	_NZ = _max.z - _min.z;
@@ -27,7 +27,7 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 	//Inicializamos a grid
 	_grid.resize(_NX*_NY*_NZ);
 
-	//Adicionamos os objectos às células respectivas
+	//Adicionamos os objectos as celulas respectivas
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		BoundingBox* BBox = (*it)->getBoundingBox();
 
@@ -43,6 +43,10 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 			for (int y = iymin; y <= iymax; y++){
 				for (int x = ixmin; x <= ixmax; x++){
 					int index = x + _NX * y + _NX * _NY * z;
-					_grid[index]._objects.push_back(*it);				}			}		}	}
+					_grid[index]._objects.push_back(*it);
+				}
+			}
+		}
+	}
 }
 
