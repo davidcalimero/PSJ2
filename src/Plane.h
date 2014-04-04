@@ -3,7 +3,6 @@
 #include "Object.h"
 
 
-
 class Plane : public Object {
 
 private:

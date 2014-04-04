@@ -3,7 +3,6 @@
 #include "Object.h"
 
 
-
 class Triangle : public Object {
 
 private:

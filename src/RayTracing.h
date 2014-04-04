@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Utils.h"
-#include "Object.h"
 #include "Scene.h"
+
 
 class RayTracing {
 	private:

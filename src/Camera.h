@@ -1,8 +1,6 @@
 #pragma once
 
-#include <glm.hpp>
 #include "Utils.h"
-#include <math.h>
 
 
 class Camera {

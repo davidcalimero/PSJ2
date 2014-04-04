@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Utils.h"
 #include "RayTracing.h"
-#include "Scene.h"
 
 class Sampling
 {

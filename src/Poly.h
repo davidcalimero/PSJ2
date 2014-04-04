@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Object.h"
-#include <cmath>
 
 class Poly : public Object {
 

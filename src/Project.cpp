@@ -1,4 +1,3 @@
-#include "RayTracing.h"
 #include "Sampling.h"
 
 int RES_X, RES_Y; //resolucao do ecra
@@ -49,16 +48,17 @@ void reshape(int w, int h) {
 void drawScene() {
 
 	//As threads vao actualizar o buffer com as respectivas cores
-	//createThreadsAndJoin();
+	createThreadsAndJoin();
 
 	//Sampling
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
 			//Calcula a cor do pixel
-			glm::vec3 color = Sampling::recursiveFill(glm::vec2(x,y), 1, buffer);
+			//glm::vec3 color = Sampling::recursiveFill(glm::vec2(x,y), 1, buffer);
 			//Pinta o pixel
 			glBegin(GL_POINTS);
-			glColor3f(color.r, color.g, color.b);
+			//glColor3f(color.r, color.g, color.b);
+			glColor3f(buffer[y][x].r, buffer[y][x].g, buffer[y][x].b);
 			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
 		}

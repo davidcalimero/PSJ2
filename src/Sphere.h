@@ -3,7 +3,6 @@
 #include "Object.h"
 
 
-
 class Sphere : public Object {
 
 private:
