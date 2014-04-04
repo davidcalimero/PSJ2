@@ -1,6 +1,7 @@
 #include "Sampling.h"
 #include "RegularGrid.h"
 
+
 int RES_X, RES_Y; //resolucao do ecra
 std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar - representa as cores DOS CANTOS dos pixeis
 std::vector<std::thread> threads; //threads que vao ser utilizadas
@@ -47,12 +48,13 @@ void reshape(int w, int h) {
 
 // Draw function by primary ray casting from the eye towards the scene's objects
 void drawScene() {
+	time_t timeBefore, timeAfter;
+	time(&timeBefore);
 
 	//As threads vao actualizar o buffer com as respectivas cores
-	//createThreadsAndJoin();
+	createThreadsAndJoin();
 
 	//Sampling
-	/** /
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
 			//Calcula a cor do pixel
@@ -65,10 +67,10 @@ void drawScene() {
 			glEnd();
 		}
 	}
-	/**/
 
 	glFlush();
-	std::cout << "Terminou!" << std::endl;
+	time(&timeAfter);
+	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds!" << std::endl;
 }
 
 

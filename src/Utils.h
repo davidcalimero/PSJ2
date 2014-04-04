@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <glm.hpp>
 #include <cmath>
+#include <ctime>
 #include <iomanip>
 #include <vector>
 #include <thread>
