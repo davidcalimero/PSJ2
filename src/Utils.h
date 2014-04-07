@@ -14,12 +14,14 @@
 
 #define MAX_DEPTH 6
 #define N_THREADS 8
-#define LIGHTS_AREA 8.0f  //LIGHTS_AREA X LIGHTS_AREA
+#define LIGHTS_AREA 1.0f  //LIGHTS_AREA X LIGHTS_AREA
 
 #define PI 3.14159265
 
 #define COLOR_THRESHOLD 0.3
-#define MAX_SAMPLING 4
+#define MAX_SAMPLING 0	// 0 = no anti-aliasing
+
+#define CELL_SIZE 1.0f //max size of cells
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))

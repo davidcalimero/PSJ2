@@ -46,6 +46,8 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 
 	if (lights.size() > 0)
 		color = glm::vec3(0);
+	else
+		return oB->GetFillColor();
 
 	//Vai calcular a sombra para cada fonte de luz
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){

@@ -74,7 +74,7 @@ void drawScene() {
 int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
-	if (!(Scene::getInstance().loadNFF("scenes/balls_low.nff"))) return 0;
+	if (!(Scene::getInstance().loadNFF("scenes/SampleScene.nff"))) return 0;
 
 	RegularGrid* grid = new RegularGrid(Scene::getInstance().GetObjects());
 

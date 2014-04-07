@@ -1,13 +1,21 @@
 #include "Sampling.h"
 
 glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector<std::vector<glm::vec3>> &buffer){
+	
+	Ray ray;
 
+	// If recursive == 0, then it's going to get the pixel color (basically no anti-aliasing)
+	if (MAX_SAMPLING == 0){
+		ray = ray = Scene::getInstance().GetCamera()->PrimaryRay(subpixel.x, subpixel.y);
+		return RayTracing::rayTracing(ray, 1, 1);
+	}
+
+	// In the case that there is a level of recursion, it's going to apply anti-aliasing
 	//							ponto 3	 ______________  ponto 4
 	//									|			   |
 	//									|	   CP	   |
 	//							ponto 1	|______________| ponto 2
 
-	Ray ray;
 
 	// Encontrar as cores nos cantos do pixel em centralPoint
 	glm::vec2 point1 = glm::vec2(subpixel.x - (1 / pow(2, recursive)), subpixel.y - (1 / pow(2, recursive)));
