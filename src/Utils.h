@@ -16,8 +16,6 @@
 #define N_THREADS 8
 #define LIGHTS_AREA 8.0f  //LIGHTS_AREA X LIGHTS_AREA
 
-#define LIGHT_TYPE false  //true -> Luz em area   false -> Luz em ponto
-
 #define PI 3.14159265
 
 #define COLOR_THRESHOLD 0.3

@@ -11,8 +11,7 @@ std::vector<std::thread> threads; //threads que vao ser utilizadas
 void sendRay(int xi, int yi, int w, int h) {
 	for (int y = yi; y < yi + h; y++) {
 		for (int x = xi; x < xi + w; x++) {
-			Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(x - 0.5f, y - 0.5f);
-			buffer[y][x] = RayTracing::rayTracing(ray, 1, 1);
+			buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1, buffer);
 		}
 	}
 }
@@ -25,7 +24,7 @@ void createThreadsAndJoin(){
 
 	//Cria as threads
 	for (int i = 0; i < N_THREADS; i++)
-		threads.push_back(std::thread(sendRay, i * (RES_X + 1) / N_THREADS, 0, (RES_X + 1) / N_THREADS, RES_Y));
+		threads.push_back(std::thread(sendRay, i * RES_X / N_THREADS, 0, RES_X / N_THREADS, RES_Y));
 
 	//Faz join
 	for (int i = 0; i < N_THREADS; i++)
@@ -57,11 +56,8 @@ void drawScene() {
 	//Sampling
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
-			//Calcula a cor do pixel
-			//glm::vec3 color = Sampling::recursiveFill(glm::vec2(x,y), 1, buffer);
 			//Pinta o pixel
 			glBegin(GL_POINTS);
-			//glColor3f(color.r, color.g, color.b);
 			glColor3f(buffer[y][x].r, buffer[y][x].g, buffer[y][x].b);
 			glVertex2f((GLfloat)x, (GLfloat)y);
 			glEnd();
