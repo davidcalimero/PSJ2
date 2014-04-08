@@ -7,13 +7,11 @@ std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar 
 std::vector<std::thread> threads; //threads que vao ser utilizadas
 
 
-//Enviar um raio
-void sendRay(int xi, int yi, int w, int h) {
-	for (int y = yi; y < yi + h; y++) {
-		for (int x = xi; x < xi + w; x++) {
+//Funcao utilizada pelas threads
+void sendRay(int xi, int xf, int yi, int yf) {
+	for (int y = yi; y < yf; y++)
+		for (int x = xi; x < xf; x++)
 			buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1, buffer);
-		}
-	}
 }
 
 
@@ -22,11 +20,16 @@ void createThreadsAndJoin(){
 	//Limpa o vector de threads
 	threads.clear();
 
-	//Cria as threads
-	for (int i = 0; i < N_THREADS; i++)
-		threads.push_back(std::thread(sendRay, i * RES_X / N_THREADS, 0, RES_X / N_THREADS, RES_Y));
+	//Cria as threads dividindo a janela por cada thread
+	int inicio = floor(RES_X / N_THREADS);
+	for (int i = 0; i < N_THREADS; i++){
+		int fim = i * inicio + inicio;
+		if (i == N_THREADS - 1) fim = RES_X;
+		//std::cout << "thread " << i << " inicio: " << i*inicio << " fim: " << fim << std::endl;
+		threads.push_back(std::thread(sendRay, i * inicio, fim, 0, RES_Y));
+	}
 
-	//Faz join
+	//Faz join a cada uma das threads
 	for (int i = 0; i < N_THREADS; i++)
 		threads[i].join();
 }
@@ -76,6 +79,7 @@ int main(int argc, char**argv) {
 	//Se nao conseguir ler o ficheiro termina
 	if (!(Scene::getInstance().loadNFF("scenes/SampleScene.nff"))) return 0;
 
+	//Criacao da grid onde os objectos vao ficar
 	RegularGrid* grid = new RegularGrid(Scene::getInstance().GetObjects());
 
 	//Actualiza resolucao da janela
@@ -83,10 +87,9 @@ int main(int argc, char**argv) {
 	RES_Y = Scene::getInstance().GetCamera()->GetResY();
 
 	//Resize Buffer
-	buffer.resize(RES_Y + 1);
-	for (int i = 0; i < RES_Y + 1; ++i) {
-		buffer[i].resize(RES_X + 1);
-	}
+	buffer.resize(RES_Y);
+	for (int i = 0; i < RES_Y; ++i)
+		buffer[i].resize(RES_X);
 
 	std::cout << "Resolution: " << RES_X << " X " << RES_Y << std::endl;
 
