@@ -15,7 +15,7 @@ glm::vec3 DOF::DepthOfField(glm::vec2 pixel, float focalLength){
 		float x = (di % AREA_SQUARE_DOF - (AREA_SQUARE_DOF * 0.5f)) / AREA_SQUARE_DOF;
 		float y = ((float)floor(di / AREA_SQUARE_DOF) - (AREA_SQUARE_DOF * 0.5f)) / AREA_SQUARE_DOF;
 
-		std::cout << "x = " << x << " and y = " << y << std::endl;
+		//std::cout << "x = " << x << " and y = " << y << std::endl;
 
 		float du = (rand() / float(RAND_MAX + 1)) / AREA_SQUARE_DOF; //generating random number
 		float dn = (rand() / float(RAND_MAX + 1)) / AREA_SQUARE_DOF;
@@ -23,14 +23,14 @@ glm::vec3 DOF::DepthOfField(glm::vec2 pixel, float focalLength){
 		glm::vec3 u = Scene::getInstance().GetCamera()->GetU();
 		glm::vec3 n = Scene::getInstance().GetCamera()->GetN();
 
-		std::cout << "du = " << du << " and dn = " << dn << std::endl;
+		//std::cout << "du = " << du << " and dn = " << dn << std::endl;
 
 		Ray newRay;
 
 		float newU = y + du;
 		float newN = x + dn;
 
-		std::cout << "newU = " << newU << " and newN = " << newN << std::endl;
+		//std::cout << "newU = " << newU << " and newN = " << newN << std::endl;
 
 		// creating new camera position(or ray start using jittering)
 		newRay.O = ray.O + newU*u + newN*n;
