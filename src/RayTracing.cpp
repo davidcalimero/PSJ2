@@ -54,8 +54,11 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 		for (int x = 0; x < LIGHTS_AREA; x++){
 			for (int y = 0; y < LIGHTS_AREA; y++){
 				glm::vec3 new_position = (*il)->position;
-				new_position.x += (float)((x - (LIGHTS_AREA / 2.0f)) * 0.2);
-				new_position.y += (float)((y - (LIGHTS_AREA / 2.0f)) * 0.2);
+				if (LIGHTS_AREA > 1){
+					//Posicao random entre 0.5 e 0.1 em x e y
+					new_position.x += (float)((x - (LIGHTS_AREA / 2.0f)) * 1 / (float)((rand() % 10) + 2));
+					new_position.y += (float)((y - (LIGHTS_AREA / 2.0f)) * 1 / (float)((rand() % 10) + 2));
+				}
 				color += calculateShadow(new_position, (*il)->color, point, normal, oB) / (LIGHTS_AREA * LIGHTS_AREA);
 			}
 		}
