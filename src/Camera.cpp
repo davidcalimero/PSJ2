@@ -68,6 +68,6 @@ glm::vec3 Camera::GetPos(){
 glm::vec3 Camera::GetU(){
 	return _ye;
 }
-glm::vec3 Camera::GetV(){
-	return _ze;
+glm::vec3 Camera::GetN(){
+	return _xe;
 }

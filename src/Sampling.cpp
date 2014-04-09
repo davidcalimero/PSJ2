@@ -1,6 +1,6 @@
 #include "Sampling.h"
 
-glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector<std::vector<glm::vec3>> &buffer){
+glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive){
 	
 	Ray ray;
 
@@ -45,16 +45,16 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive, std::vector
 
 		if (diff12 > COLOR_THRESHOLD || diff13 > COLOR_THRESHOLD || diff24 > COLOR_THRESHOLD || diff34 > COLOR_THRESHOLD){
 			glm::vec2 p1 = (subpixel + point1) * 0.5f;
-			colorP1 = recursiveFill(p1, recursive + 1, buffer);
+			colorP1 = recursiveFill(p1, recursive + 1);
 
 			glm::vec2 p2 = (subpixel + point2) * 0.5f;
-			colorP2 = recursiveFill(p2, recursive + 1, buffer);
+			colorP2 = recursiveFill(p2, recursive + 1);
 
 			glm::vec2 p3 = (subpixel + point3) * 0.5f;
-			colorP3 = recursiveFill(p3, recursive + 1, buffer);
+			colorP3 = recursiveFill(p3, recursive + 1);
 
 			glm::vec2 p4 = (subpixel + point4) * 0.5f;
-			colorP4 = recursiveFill(p4, recursive + 1, buffer);
+			colorP4 = recursiveFill(p4, recursive + 1);
 		}
 	}
 

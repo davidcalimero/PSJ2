@@ -16,7 +16,7 @@ void sendRay(int xi, int xf, int yi, int yf) {
 				buffer[y][x] = DOF::DepthOfField(glm::vec2(x, y), FOCALLENGTH);
 			}
 			else{
-				buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1, buffer);
+				buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1);
 			}
 		}
 	}
@@ -29,7 +29,7 @@ void createThreadsAndJoin(){
 	threads.clear();
 
 	//Cria as threads dividindo a janela por cada thread
-	int inicio = floor(RES_X / N_THREADS);
+	int inicio = (int) floor(RES_X / N_THREADS);
 	for (int i = 0; i < N_THREADS; i++){
 		int fim = i * inicio + inicio;
 		if (i == N_THREADS - 1) fim = RES_X;
