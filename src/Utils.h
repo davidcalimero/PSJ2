@@ -20,6 +20,10 @@
 #define COLOR_THRESHOLD 0.3  //DiferenCa de cor aceitavel no sampling
 #define MAX_SAMPLING 0	     //n x anti-alising (0 = no anti-aliasing)
 #define CELL_SIZE 1.0f       //max size of cells
+
+#define DOF_ACTIVE false		//Depth of Field active or not
+#define FOCALLENGTH 100.0f    //focal length of the lens of DOF
+#define N_DOF_RAYS 15		 //Number of rays for pixel of the calculation of DOF
 //--------------------------
 
 

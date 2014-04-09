@@ -64,3 +64,10 @@ int Camera::GetResY(){
 glm::vec3 Camera::GetPos(){
 	return _eye;
 }
+
+glm::vec3 Camera::GetU(){
+	return _ye;
+}
+glm::vec3 Camera::GetV(){
+	return _ze;
+}

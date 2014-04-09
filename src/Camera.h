@@ -22,5 +22,7 @@ public:
 	int GetResY();
 	Ray PrimaryRay(float x, float y);
 	glm::vec3 GetPos();
+	glm::vec3 GetU();
+	glm::vec3 GetV();
 
 };

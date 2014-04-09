@@ -1,4 +1,5 @@
 #include "Sampling.h"
+#include "DOF.h"
 #include "RegularGrid.h"
 
 
@@ -9,9 +10,16 @@ std::vector<std::thread> threads; //threads que vao ser utilizadas
 
 //Funcao utilizada pelas threads
 void sendRay(int xi, int xf, int yi, int yf) {
-	for (int y = yi; y < yf; y++)
-		for (int x = xi; x < xf; x++)
-			buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1, buffer);
+	for (int y = yi; y < yf; y++){
+		for (int x = xi; x < xf; x++){
+			if (DOF_ACTIVE){
+				buffer[y][x] = DOF::DepthOfField(glm::vec2(x, y), FOCALLENGTH);
+			}
+			else{
+				buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1, buffer);
+			}
+		}
+	}
 }
 
 
@@ -77,7 +85,7 @@ void drawScene() {
 int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
-	if (!(Scene::getInstance().loadNFF("scenes/SampleScene.nff"))) return 0;
+	if (!(Scene::getInstance().loadNFF("scenes/balls_low.nff"))) return 0;
 
 	//Criacao da grid onde os objectos vao ficar
 	RegularGrid* grid = new RegularGrid(Scene::getInstance().GetObjects());
