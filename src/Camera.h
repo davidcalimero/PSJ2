@@ -13,7 +13,7 @@ private:
 
 	float _d;
 	float _w, _h;
-	glm::vec3 _xe, _ye, _ze; //uvn frame 
+	glm::vec3 _xe, _ye, _ze; //uvn frame _xe -> u, _ye -> v, _ze -> n
 
 public:
 	Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, float f, int ResX, int ResY);
@@ -23,6 +23,6 @@ public:
 	Ray PrimaryRay(float x, float y);
 	glm::vec3 GetPos();
 	glm::vec3 GetU();
-	glm::vec3 GetN();
+	glm::vec3 GetV();
 
 };

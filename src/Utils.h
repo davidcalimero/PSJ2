@@ -14,7 +14,7 @@
 
 
 // CONFIGURACOES DO PROJECTO
-#define N_THREADS 1			//Numero de Threads
+#define N_THREADS 8			//Numero de Threads
 #define MAX_DEPTH 6		    //Profundidade dos raios secundarios
 #define LIGHTS_AREA 1.0f    //Area ocupada por uma luz (LIGHTS_AREA X LIGHTS_AREA)
 #define COLOR_THRESHOLD 0.3 //DiferenCa de cor aceitavel no sampling
@@ -22,8 +22,8 @@
 #define CELL_SIZE 1.0f      //max size of cells
 
 #define DOF_ACTIVE true		//Depth of Field active or not
-#define FOCALLENGTH 15.0f	//focal length of the lens of DOF
-#define AREA_SQUARE_DOF 5	//Number of rays per square unit
+#define FOCALLENGTH 2.5f	//focal length of the lens of DOF
+#define N_DEPTH_RAYS 15      //Numero de raios enviados pelo depth of field num pixel
 //--------------------------
 
 
