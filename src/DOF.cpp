@@ -7,7 +7,7 @@ glm::vec3 DOF::DepthOfField(glm::vec2 pixel){
 
 	Ray ray = Scene::getInstance().GetCamera()->PrimaryRay(pixel.x, pixel.y);
 
-	if (!DOF_ACTIVE)
+	if (N_DEPTH_RAYS == 0)
 		return RayTracing::rayTracing(ray, 1, 1);
 
 	//pointAimed is the position of pixel on focal plane 

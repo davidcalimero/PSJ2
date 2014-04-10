@@ -5,10 +5,8 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive){
 	Ray ray;
 
 	// If recursive == 0, then it's going to get the pixel color (basically no anti-aliasing)
-	if (MAX_SAMPLING == 0){
-		ray = ray = Scene::getInstance().GetCamera()->PrimaryRay(subpixel.x, subpixel.y);
-		return RayTracing::rayTracing(ray, 1, 1);
-	}
+	if (MAX_SAMPLING == 0)
+		return DOF::DepthOfField(subpixel);
 
 	// In the case that there is a level of recursion, it's going to apply anti-aliasing
 	//							ponto 3	 ______________  ponto 4
