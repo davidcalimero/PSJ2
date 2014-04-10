@@ -1,23 +1,17 @@
 #include "Sampling.h"
-#include "DOF.h"
-#include "RegularGrid.h"
 
 
-int RES_X, RES_Y; //resolucao do ecra
-std::vector<std::vector<glm::vec3>> buffer; //buffer onde as threads vao pintar - representa as cores DOS CANTOS dos pixeis
-std::vector<std::thread> threads; //threads que vao ser utilizadas
+int RES_X, RES_Y;  //Resolucao do ecra
+std::vector<std::vector<glm::vec3>> buffer; //Buffer onde as threads vao pintar - representa as cores DOS CANTOS dos pixeis
+std::vector<std::thread> threads; //Threads que vao ser utilizadas
 
 
 //Funcao utilizada pelas threads
 void sendRay(int xi, int xf, int yi, int yf) {
+
 	for (int y = yi; y < yf; y++){
 		for (int x = xi; x < xf; x++){
-			if (DOF_ACTIVE){
-				buffer[y][x] = DOF::DepthOfField(glm::vec2(x, y));
-			}
-			else{
-				buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1);
-			}
+			buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1);
 		}
 	}
 }
@@ -39,8 +33,10 @@ void createThreadsAndJoin(){
 	}
 
 	//Faz join a cada uma das threads
-	for (int i = 0; i < n_threads; i++)
+	for (int i = 0; i < n_threads; i++){
 		threads[i].join();
+		threads[i].~thread();
+	}
 }
 
 
@@ -78,7 +74,18 @@ void drawScene() {
 
 	glFlush();
 	time(&timeAfter);
-	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds!" << std::endl;
+	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds! with grid: " << usingGrid << std::endl;
+}
+
+
+//Key Handler
+void keyUp(unsigned char key, int x, int y){
+	if (key == 'G' || key == 'g'){
+		glClearColor(0.0, 0.0, 0.0, 0.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		//Scene::getInstance().toggleGrid();
+		glutPostRedisplay();
+	}
 }
 
 
@@ -87,9 +94,6 @@ int main(int argc, char**argv) {
 
 	//Se nao conseguir ler o ficheiro termina
 	if (!(Scene::getInstance().loadNFF("scenes/balls_low.nff"))) return 0;
-
-	//Criacao da grid onde os objectos vao ficar
-	RegularGrid* grid = new RegularGrid(Scene::getInstance().GetObjects());
 
 	//Actualiza resolucao da janela
 	RES_X = Scene::getInstance().GetCamera()->GetResX();
@@ -112,6 +116,7 @@ int main(int argc, char**argv) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(drawScene);
+	glutKeyboardUpFunc(keyUp);
 	glDisable(GL_DEPTH_TEST);
 	glutMainLoop();
 

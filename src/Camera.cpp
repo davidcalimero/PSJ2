@@ -18,7 +18,7 @@ Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up, float fovy, float n, f
 	_w = (float)_ResX / _ResY * _h;
 
 	_ze = (_eye - _at) / _d;
-	_xe = glm::cross(_up, _ze) / Utils::norma(glm::cross(_up, _ze));
+	_xe = glm::normalize(glm::cross(_up, _ze));
 	_ye = glm::cross(_ze, _xe);
 
 

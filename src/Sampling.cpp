@@ -23,18 +23,11 @@ glm::vec3 Sampling::recursiveFill(glm::vec2 subpixel, int recursive){
 	glm::vec2 point3 = glm::vec2(subpixel.x - (1 / pow(2, recursive)), subpixel.y + (1 / pow(2, recursive)));
 	glm::vec2 point4 = glm::vec2(subpixel.x + (1 / pow(2, recursive)), subpixel.y + (1 / pow(2, recursive)));
 
-	//Calcular a cor dos vários pontos
-	ray = Scene::getInstance().GetCamera()->PrimaryRay(point1.x, point1.y);
-	glm::vec3 colorP1 = RayTracing::rayTracing(ray, 1, 1);
-
-	ray = Scene::getInstance().GetCamera()->PrimaryRay(point2.x, point2.y);
-	glm::vec3 colorP2 = RayTracing::rayTracing(ray, 1, 1);
-
-	ray = Scene::getInstance().GetCamera()->PrimaryRay(point3.x, point3.y);
-	glm::vec3 colorP3 = RayTracing::rayTracing(ray, 1, 1);
-
-	ray = Scene::getInstance().GetCamera()->PrimaryRay(point4.x, point4.y);
-	glm::vec3 colorP4 = RayTracing::rayTracing(ray, 1, 1);
+	//Calcular a cor dos varios pontos
+	glm::vec3 colorP1 = DOF::DepthOfField(point1);
+	glm::vec3 colorP2 = DOF::DepthOfField(point2);
+	glm::vec3 colorP3 = DOF::DepthOfField(point3);
+	glm::vec3 colorP4 = DOF::DepthOfField(point4);
 
 	if (recursive < MAX_SAMPLING){
 		//Super Sampling
