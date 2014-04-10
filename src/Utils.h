@@ -14,15 +14,27 @@
 
 
 // CONFIGURACOES DO PROJECTO
+//Threads
 #define N_THREADS 8			//Numero de Threads
+
+//Raytracing
 #define MAX_DEPTH 6		    //Profundidade dos raios secundarios
-#define LIGHTS_AREA 1.0f    //Area ocupada por uma luz (LIGHTS_AREA X LIGHTS_AREA)
+
+//Light
+#define LIGHTS_AREA 1.0f    //Raio da area ocupada pela luz
+#define LIGHT_SAMPLE 1.0f   //Numero de amostras de luzes (LIGHT_SAMPLE X LIGHT_SAMPLE)
+
+//Sampling
 #define COLOR_THRESHOLD 0.3 //Diferenca de cor aceitavel no sampling
 #define MAX_SAMPLING 0	    //n x anti-aliasing (0 = no anti-aliasing)
+
+//Grid
 #define CELL_SIZE 1.0f      //Tamanho maximo das celulas da grid
+
+//DOF
 #define DOF_ACTIVE false 	//DOF activado ou nao
 #define FOCALLENGTH 2.5f	//Distancia focal da lente do DOF
-#define N_DEPTH_RAYS 15     //Numero de raios enviados pelo DOF num pixel
+#define N_DEPTH_RAYS 50     //Numero de raios enviados pelo DOF num pixel
 //--------------------------
 
 

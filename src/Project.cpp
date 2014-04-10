@@ -57,8 +57,8 @@ void reshape(int w, int h) {
 void drawScene() {
 	time_t timeBefore, timeAfter;
 	time(&timeBefore);
-
-	//As threads vao actualizar o buffer com as respectivas cores
+	
+	/**/ //As threads vao actualizar o buffer com as respectivas cores
 	createThreadsAndJoin();
 
 	//Sampling
@@ -71,10 +71,11 @@ void drawScene() {
 			glEnd();
 		}
 	}
-
+	/**/
+	
 	glFlush();
 	time(&timeAfter);
-	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds! with grid: " << usingGrid << std::endl;
+	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds!" << std::endl;
 }
 
 

@@ -51,15 +51,15 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 
 	//Vai calcular a sombra para cada fonte de luz
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){
-		for (int x = 0; x < LIGHTS_AREA; x++){
-			for (int y = 0; y < LIGHTS_AREA; y++){
+		for (int x = 0; x < LIGHT_SAMPLE; x++){
+			for (int y = 0; y < LIGHT_SAMPLE; y++){
 				glm::vec3 new_position = (*il)->position;
-				if (LIGHTS_AREA > 1){
-					//Posicao random entre 0.5 e 0.1 em x e y
-					new_position.x += (float)((x - (LIGHTS_AREA / 2.0f)) * 1 / (float)((rand() % 10) + 2));
-					new_position.y += (float)((y - (LIGHTS_AREA / 2.0f)) * 1 / (float)((rand() % 10) + 2));
+				//Se houver mais do que uma luz faz Jittering
+				if (LIGHT_SAMPLE > 1){
+					new_position.x += -LIGHTS_AREA + (x * 2.0f * LIGHTS_AREA / LIGHT_SAMPLE) + (1.0f / ((rand() % 100) + 1.0f) * (2.0f * LIGHTS_AREA / LIGHT_SAMPLE));
+					new_position.y += -LIGHTS_AREA + (y * 2.0f * LIGHTS_AREA / LIGHT_SAMPLE) + (1.0f / ((rand() % 100) + 1.0f) * (2.0f * LIGHTS_AREA / LIGHT_SAMPLE));
 				}
-				color += calculateShadow(new_position, (*il)->color, point, normal, oB) / (LIGHTS_AREA * LIGHTS_AREA);
+				color += calculateShadow(new_position, (*il)->color, point, normal, oB) / (LIGHT_SAMPLE * LIGHT_SAMPLE);
 			}
 		}
 	}
