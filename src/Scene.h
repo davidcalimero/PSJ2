@@ -6,6 +6,7 @@
 #include "Poly.h"
 #include "Triangle.h"
 #include "AABB.h"
+#include "RegularGrid.h"
 
 class Scene {
 private:
@@ -13,6 +14,8 @@ private:
 	glm::vec3 _bckg_color;
 	std::vector<Light*> _lights;
 	std::vector<Object*> _objects;
+	RegularGrid* _grid;
+	bool _usingGrid;
 
 	Scene();
 	bool loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects);
@@ -28,7 +31,8 @@ public:
 	glm::vec3 GetBckgColor();
 	bool loadNFF(char* filename);
 
-	std::vector<Object*> GetObjects();
+	std::vector<Object*> GetObjects(Ray ray);
 	std::vector<Light*> GetLights();
+	void toggleGrid();
 	
 };

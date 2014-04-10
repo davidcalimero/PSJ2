@@ -1,6 +1,8 @@
 #include "Scene.h"
 
-Scene::Scene(){}
+Scene::Scene(){
+	_grid = false;
+}
 Scene::~Scene(){}
 
 //Retorna a instancia singleton de scene
@@ -30,11 +32,18 @@ bool Scene::loadNFF(char* filename){
 	if (!result) return result;
 	_camera = new Camera(from, at, up, angle, 0, 0, (int)resolution.x, (int)resolution.y);
 
+	// Regular Grid Creation
+	_grid = new RegularGrid(_objects);
+
 	return true;
 }
 
-std::vector<Object*> Scene::GetObjects(){
-	return _objects;
+std::vector<Object*> Scene::GetObjects(Ray ray){
+	//std::vector<Object*> objs;
+	if (_usingGrid){
+		return _grid->traversalAlgorithm(ray);
+	}
+	else return _objects;
 }
 
 std::vector<Light*> Scene::GetLights(){
@@ -174,3 +183,6 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 	return true;
 }
 
+void Scene::toggleGrid(){
+	_usingGrid = !_usingGrid;
+}

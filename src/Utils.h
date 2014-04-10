@@ -29,7 +29,7 @@
 #define MAX_SAMPLING 0	    //n x anti-aliasing (0 = no anti-aliasing)
 
 //Grid
-#define CELL_SIZE 1.0f      //Tamanho maximo das celulas da grid
+#define M 2.0f				//Factor de maximizacao
 
 //DOF
 #define DOF_ACTIVE false 	//DOF activado ou nao

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Utils.h"
 #include "Object.h"
 
 typedef struct {
@@ -13,8 +12,10 @@ class RegularGrid
 		int _NX, _NY, _NZ;
 		glm::vec3 _min, _max;
 		std::vector<Cell> _grid;
+		bool rayInterception(Ray ray);
 
 	public:
 		RegularGrid(std::vector<Object*> objs);
+		std::vector<Object*> traversalAlgorithm(Ray ray);
 };
 

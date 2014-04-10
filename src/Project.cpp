@@ -84,7 +84,7 @@ void keyUp(unsigned char key, int x, int y){
 	if (key == 'G' || key == 'g'){
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		//Scene::getInstance().toggleGrid();
+		Scene::getInstance().toggleGrid();
 		glutPostRedisplay();
 	}
 }

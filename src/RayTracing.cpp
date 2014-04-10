@@ -2,7 +2,7 @@
 
 //Verifica se um raio em direcao a cada fonte de luz tem algum objecto pelo meio
 bool RayTracing::isAffectedByLight(Ray ray){
-	std::vector<Object*> objs = Scene::getInstance().GetObjects();
+	std::vector<Object*> objs = Scene::getInstance().GetObjects(ray);
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		glm::vec3 point;
 		glm::vec3 normal;
@@ -70,7 +70,7 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 
 //Encontra o objecto mais proximo da origem do raio
 Object * RayTracing::nearestIntersection(Ray ray, glm::vec3 &normal, glm::vec3 &point){
-	std::vector<Object*> objs = Scene::getInstance().GetObjects();
+	std::vector<Object*> objs = Scene::getInstance().GetObjects(ray);
 	float nearestPoint = -1;
 	Object * object = NULL;
 
