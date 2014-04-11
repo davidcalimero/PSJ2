@@ -8,12 +8,9 @@ std::vector<std::thread> threads; //Threads que vao ser utilizadas
 
 //Funcao utilizada pelas threads
 void sendRay(int xi, int xf, int yi, int yf) {
-
-	for (int y = yi; y < yf; y++){
-		for (int x = xi; x < xf; x++){
+	for (int y = yi; y < yf; y++)
+		for (int x = xi; x < xf; x++)
 			buffer[y][x] = Sampling::recursiveFill(glm::vec2(x, y), 1);
-		}
-	}
 }
 
 
@@ -61,7 +58,7 @@ void drawScene() {
 	/**/ //As threads vao actualizar o buffer com as respectivas cores
 	createThreadsAndJoin();
 
-	//Sampling
+	//Ciclo principal de pintura
 	for (int y = 0; y < RES_Y; y++) {
 		for (int x = 0; x < RES_X; x++) {
 			//Pinta o pixel

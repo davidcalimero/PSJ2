@@ -39,11 +39,10 @@ bool Scene::loadNFF(char* filename){
 }
 
 std::vector<Object*> Scene::GetObjects(Ray ray){
-	//std::vector<Object*> objs;
-	if (_usingGrid){
+	if (_usingGrid)
 		return _grid->traversalAlgorithm(ray);
-	}
-	else return _objects;
+	
+	return _objects;
 }
 
 std::vector<Light*> Scene::GetLights(){
