@@ -120,6 +120,9 @@ bool Poly::returnPoint(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	//Se a interseccao estiver por tras do raio original retorna false
 	if (ti < 0) return false;
 
+	//Distancia ao ponto de intercessao
+	_t = ti;
+
 	//Ponto onde existe interseccao
 	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
 

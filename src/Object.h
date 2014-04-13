@@ -12,11 +12,13 @@ protected:
 	float _transmittance;
 	float _indexRefraction;
 	BoundingBox _box;
+	float _t;
 
 public:
 	Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction);
 	virtual bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal) = 0;
-
+	bool rayInterception(Ray ray, float &t);
+	
 	glm::vec3 GetFillColor();
 	glm::vec3 Get_k_constants();
 	float getTransmittance();

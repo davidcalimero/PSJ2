@@ -7,6 +7,16 @@ Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance,
 	_k_constants = k_constants;
 	_transmittance = transmittance;
 	_indexRefraction = indexRefraction;
+	_t = (float)INFINITE;
+}
+
+//Indica o valor de t (distancia ao ponto de intercessao)
+bool Object::rayInterception(Ray ray, float &t){
+	glm::vec3 point;
+	glm::vec3 normal;
+	bool intercessao = rayInterception(ray, point, normal);
+	t = _t;
+	return intercessao;
 }
 
 //Retorna a cor do material do objecto

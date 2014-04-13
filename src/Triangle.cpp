@@ -105,6 +105,9 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	if (B < 0 || B > 1 || Y < 0 || Y > 1 || (B+Y) > 1)
 		return false;
 
+	//Distancia ao ponto de intercessao
+	_t = ti;
+
 	normal = _normal;
 	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
 

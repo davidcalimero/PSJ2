@@ -48,6 +48,9 @@ bool AABB::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 			return false;
 	}
 
+	//Distancia ao ponto de intercessao
+	_t = tprox;
+
 	//Ponto de intercessao
 	point = glm::vec3(ray.O.x + ray.D.x * tprox, ray.O.y + ray.D.y * tprox, ray.O.z + ray.D.z * tprox);
 
