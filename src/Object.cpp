@@ -2,11 +2,12 @@
 
 
 
-Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) {
+Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture) {
 	_fill_color = fill_color;
 	_k_constants = k_constants;
 	_transmittance = transmittance;
 	_indexRefraction = indexRefraction;
+	_texture = texture;
 	_t = (float)INFINITE;
 }
 
@@ -20,8 +21,14 @@ bool Object::rayInterception(Ray ray, float &t){
 }
 
 //Retorna a cor do material do objecto
-glm::vec3 Object::GetFillColor(){
-	return _fill_color;
+glm::vec3 Object::GetFillColor(glm::vec3 point, glm::vec3 normal){
+	
+	if (_texture == NULL){
+		return _fill_color;
+	}
+	
+	glm::vec3 uvColor = getColorUV(point, normal);
+	return uvColor;
 }
 
 //Retorna as caracteristicas do material (diffuse, specular, shininess)

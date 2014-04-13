@@ -2,7 +2,7 @@
 
 
 
-Plane::Plane(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction) {
+Plane::Plane(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture) : Object(fill_color, k_constants, transmittance, indexRefraction, texture) {
 	//Vertices do plano
 	_v1 = v1;
 	_v2 = v2;
@@ -42,4 +42,10 @@ bool Plane::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
 
 	return true;
+}
+
+glm::vec3 Plane::getColorUV(glm::vec3 point, glm::vec3 normal){
+
+	return _fill_color;
+
 }

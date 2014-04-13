@@ -1,6 +1,6 @@
 #include "Triangle.h"
 
-Triangle::Triangle(std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction) {
+Triangle::Triangle(std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture) : Object(fill_color, k_constants, transmittance, indexRefraction, texture) {
 	_a = vertices[0];
 	_b = vertices[1];
 	_c = vertices[2];
@@ -120,4 +120,10 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
 
 	return true;
+}
+
+glm::vec3 Triangle::getColorUV(glm::vec3 point, glm::vec3 normal){
+
+
+	return glm::vec3(0);
 }

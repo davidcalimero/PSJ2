@@ -31,7 +31,7 @@ glm::vec3 RayTracing::calculateShadow(glm::vec3 lighPosition, glm::vec3 lighColo
 		if (isAffectedByLight(shadow)){
 			float attenuation = 1.0f / (at.x + at.y * lightDist + at.z * lightDist * lightDist);
 			color = ((oB->Get_k_constants().x * glm::dot(L, normal)) +
-				(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * lighColor * oB->GetFillColor();
+				(oB->Get_k_constants().y * pow(glm::dot(H, normal), oB->Get_k_constants().z) * attenuation)) * lighColor * oB->GetFillColor(point, normal);
 		}
 	}
 
@@ -47,7 +47,7 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 	if (lights.size() > 0)
 		color = glm::vec3(0);
 	else
-		return oB->GetFillColor();
+		return oB->GetFillColor(point, normal);
 
 	//Vai calcular a sombra para cada fonte de luz
 	for (std::vector<Light*>::iterator il = lights.begin(); il != lights.end(); il++){

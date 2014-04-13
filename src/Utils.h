@@ -11,13 +11,15 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
+#include <stddef.h>
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/ply_teapot.nff"
+#define NFF_FILENAME "scenes/ply_cube.nff"
 
 // CONFIGURACOES DO PROJECTO
 //Threads
-#define N_THREADS 8			 //Numero de Threads
+#define N_THREADS 1			 //Numero de Threads
 
 //Raytracing
 #define MAX_DEPTH 6		     //Profundidade dos raios secundarios
@@ -38,6 +40,9 @@
 #define N_DEPTH_RAYS 0       //Numero de raios enviados pelo DOF num pixel (0 = no DOF)
 //--------------------------
 
+#define TGA_RGB		2
+#define TGA_A		3
+#define TGA_RLE		10
 
 //MACROS -------------------
 #define PI 3.14159265
@@ -50,16 +55,29 @@
 
 
 //ESTRUTURAS -------------
+
+typedef GLushort WORD;
+typedef GLubyte byte;
+
 typedef struct {
 	glm::vec3 O;
 	glm::vec3 D;
 } Ray;
+
+typedef struct tImageTGA
+{
+	int channels;
+	int size_x;
+	int size_y;
+	unsigned char *data;
+} tImageTGA;
 
 typedef struct {
 	glm::vec3 fill_color;
 	glm::vec3 k_constants;
 	float transmittance;
 	float indexRefraction;
+	tImageTGA *texture;
 } Properties;
 
 typedef struct {
@@ -84,6 +102,8 @@ typedef struct Face {
 	GLfloat N[3];
 	GLfloat UV[2];
 } Face;
+
+
 //--------------------------
 
 
@@ -91,5 +111,6 @@ typedef struct Face {
 namespace Utils {
 
 	float norma(glm::vec3 v);
+	tImageTGA *loadTexture(const char *strfilename);
 }
 //--------------------------

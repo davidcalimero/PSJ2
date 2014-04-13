@@ -1,7 +1,7 @@
 #include "Sphere.h"
 
 
-Sphere::Sphere(glm::vec3 centro, float raio, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction){
+Sphere::Sphere(glm::vec3 centro, float raio, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture) : Object(fill_color, k_constants, transmittance, indexRefraction, texture){
 	_centro = centro;
 	_raio = raio;
 
@@ -51,4 +51,11 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	if (doc2 < r2) normal *= -1;
 
 	return true;
+}
+
+glm::vec3 Sphere::getColorUV(glm::vec3 point, glm::vec3 normal){
+	/**/
+	
+	/**/
+	return glm::vec3(0);
 }

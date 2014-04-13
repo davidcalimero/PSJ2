@@ -1,6 +1,6 @@
 #include "Poly.h"
 
-Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction) : Object(fill_color, k_constants, transmittance, indexRefraction){
+Poly::Poly(int nVertices, std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture) : Object(fill_color, k_constants, transmittance, indexRefraction, texture){
 	_nVertices = nVertices;
 	_vertices = vertices;
 
@@ -131,4 +131,21 @@ bool Poly::returnPoint(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 float Poly::isLeft(glm::vec2 P0, glm::vec2 P1, glm::vec2 P2){
 	return ((P1.x - P0.x) * (P2.y - P0.y) - (P2.x - P0.x) * (P1.y - P0.y));
+}
+
+glm::vec3 Poly::getColorUV(glm::vec3 point, glm::vec3 normal){
+
+	//plano -x
+
+	//plano +x
+
+	//plano -y
+
+	//plano +y
+
+	//plano -z
+
+	//plano +z
+
+	return glm::vec3(0);
 }

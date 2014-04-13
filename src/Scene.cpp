@@ -102,7 +102,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 
 			std::istringstream s(line.substr(2));
 			s >> center.x >> center.y >> center.z >> radius;
-			Sphere* sphere = new Sphere(center, radius, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			Sphere* sphere = new Sphere(center, radius, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 			objects.push_back(sphere);
 		}
 		else if (line.substr(0, 5) == "from ") {
@@ -130,11 +130,20 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			s >> resolution.x >> resolution.y;
 		}
 		else if (line.substr(0, 2) == "f ") {
+			std::string textureFile;
 			properties = (Properties*)malloc(sizeof(Properties));
 			std::istringstream s(line.substr(2));
 			s	>> properties->fill_color.x >> properties->fill_color.y >> properties->fill_color.z
 				>> properties->k_constants.x >> properties->k_constants.y >> properties->k_constants.z
-				>> properties->transmittance >> properties->indexRefraction;
+				>> properties->transmittance >> properties->indexRefraction >> textureFile;
+			if (textureFile != ""){
+				properties->texture = Utils::loadTexture(textureFile.c_str());
+				PRINT(textureFile.c_str());
+			}
+			else{
+				properties->texture = NULL;
+			}
+
 			//printPropertiesValues(properties);
 		}
 		else if (line.substr(0, 3) == "pl ") {
@@ -144,7 +153,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			s >> p1.x >> p1.y >> p1.z
 				>> p2.x >> p2.y >> p2.z
 				>> p3.x >> p3.y >> p3.z;
-			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 			objects.push_back(plane);
 		}
 		else if (line.substr(0, 4) == "ply ") {
@@ -152,7 +161,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			std::string filename;
 			std::istringstream s(line.substr(3));
 			s >> filename;
-			loadPLY(filename.c_str(), objects, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			loadPLY(filename.c_str(), objects, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 		}
 
 		else if (line.substr(0, 3) == "bb ") {
@@ -161,7 +170,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			std::istringstream s(line.substr(3));
 			s >> p1.x >> p1.y >> p1.z
 				>> p2.x >> p2.y >> p2.z;
-			AABB* aabb = new AABB(p1, p2, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+			AABB* aabb = new AABB(p1, p2, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 			objects.push_back(aabb);
 		}
 		else if (line.substr(0, 2) == "p ") {
@@ -176,11 +185,11 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				vertice >> vertices.at(i).x >> vertices.at(i).y >> vertices.at(i).z;
 			}
 			if (nVertices == 3){
-				Triangle* triforce = new Triangle(vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+				Triangle* triforce = new Triangle(vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 				objects.push_back(triforce);
 
 			}else{
-				Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction);
+				Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 				objects.push_back(poly);
 			}
 		}
@@ -194,7 +203,7 @@ void Scene::toggleGrid(){
 	_usingGrid = !_usingGrid;
 }
 
-void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction){
+void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture){
 	std::vector<glm::vec3> out_vertices;
 	std::vector<glm::vec2> out_uvs;
 	std::vector<glm::vec3> out_normals;
@@ -414,6 +423,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 
 				std::vector<glm::vec3> triangle_verts;
 				std::vector<glm::vec3> triangle_normals;
+				std::vector<glm::vec2> triangle_uvs;
 
 				//out_vertices.push_back(verts[v1]);
 				//out_uvs.push_back(uvs[v1]);
@@ -421,6 +431,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 
 				triangle_verts.push_back(verts[v1]);
 				triangle_normals.push_back(norms[v1]);
+				triangle_uvs.push_back(uvs[v1]);
 			
 
 				//out_vertices.push_back(verts[v2]);
@@ -429,6 +440,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 
 				triangle_verts.push_back(verts[v2]);
 				triangle_normals.push_back(norms[v2]);
+				triangle_uvs.push_back(uvs[v2]);
 
 				//out_vertices.push_back(verts[v3]);
 				//out_uvs.push_back(uvs[v3]);
@@ -436,8 +448,9 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 
 				triangle_verts.push_back(verts[v3]);
 				triangle_normals.push_back(norms[v3]);
+				triangle_uvs.push_back(uvs[v3]);
 
-				PlyTriangle* plyTriangle = new PlyTriangle(triangle_verts, triangle_normals, fill_color, k_constants, transmittance, indexRefraction);
+				PlyTriangle* plyTriangle = new PlyTriangle(triangle_verts, triangle_normals, triangle_uvs, fill_color, k_constants, transmittance, indexRefraction, texture);
 				objects.push_back(plyTriangle);
 			}
 		}
