@@ -85,6 +85,8 @@
     <ClCompile Include="..\src\AABB.cpp" />
     <ClCompile Include="..\src\DOF.cpp" />
     <ClCompile Include="..\src\Object.cpp" />
+    <ClCompile Include="..\src\ply.c" />
+    <ClCompile Include="..\src\PlyTriangle.cpp" />
     <ClCompile Include="..\src\Poly.cpp" />
     <ClCompile Include="..\src\Project.cpp" />
     <ClCompile Include="..\src\RayTracing.cpp" />
@@ -101,6 +103,8 @@
     <ClInclude Include="..\src\AABB.h" />
     <ClInclude Include="..\src\DOF.h" />
     <ClInclude Include="..\src\Object.h" />
+    <ClInclude Include="..\src\ply.h" />
+    <ClInclude Include="..\src\PlyTriangle.h" />
     <ClInclude Include="..\src\Poly.h" />
     <ClInclude Include="..\src\RayTracing.h" />
     <ClInclude Include="..\src\RegularGrid.h" />

@@ -5,12 +5,14 @@
 
 class Triangle : public Object {
 
-private:
+protected:
 	glm::vec3 _a;
 	glm::vec3 _b;
 	glm::vec3 _c;
 
 	glm::vec3 _normal;
+
+	void calculateTriangle(Ray ray, float &B, float &Y, float &t);
 
 public:
 	Triangle(std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction);

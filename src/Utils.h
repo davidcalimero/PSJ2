@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 
+// NOME DO FICHEIRO NFF
+#define NFF_FILENAME "scenes/ply_teapot.nff"
 
 // CONFIGURACOES DO PROJECTO
 //Threads
@@ -69,6 +71,19 @@ typedef struct {
 	glm::vec3 pmin;
 	glm::vec3 pmax;
 } BoundingBox;
+
+typedef struct {
+	GLfloat XYZ[3];
+	GLfloat N[3];
+	GLfloat UV[2];
+} Vertex;
+
+typedef struct Face {
+	unsigned int count;
+	unsigned int *vertices;
+	GLfloat N[3];
+	GLfloat UV[2];
+} Face;
 //--------------------------
 
 

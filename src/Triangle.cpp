@@ -37,9 +37,7 @@ Triangle::Triangle(std::vector<glm::vec3> vertices, glm::vec3 fill_color, glm::v
 	/**/
 }
 
-
-bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
-
+void Triangle::calculateTriangle(Ray ray, float &B, float &Y, float &ti){
 	// Ray defined by:
 	// p(t) = o + d*t 
 
@@ -74,7 +72,7 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 	float denom = v1.x * (v2.y*v3.z - v3.y*v2.z) + v2.x * (v3.y*v1.z - v1.y*v3.z) + v3.x * (v1.y*v2.z - v2.y*v1.z);
 
-	float B = (vs.x * (v2.y*v3.z - v3.y*v2.z) + v2.x * (v3.y*vs.z - vs.y*v3.z) + v3.x * (vs.y*v2.z - v2.y*vs.z)) / denom;
+	B = (vs.x * (v2.y*v3.z - v3.y*v2.z) + v2.x * (v3.y*vs.z - vs.y*v3.z) + v3.x * (vs.y*v2.z - v2.y*vs.z)) / denom;
 
 	// Y = |v1 vs v3|/|v1 v2 v3|
 
@@ -86,7 +84,7 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	// Y = -------------------------------------------------------------------------------------------------
 	//     v1.x * (v2.y*v3.z - v3.y*vs.z) + v2.x * (v3.y*v1.z - v1.y*v3.z) + v3.x * (v1.y*v2.z - v2.y*v1.z)
 
-	float Y = (v1.x * (vs.y*v3.z - v3.y*vs.z) + vs.x * (v3.y*v1.z - v1.y*v3.z) + v3.x * (v1.y*vs.z - vs.y*v1.z)) / denom;
+	Y = (v1.x * (vs.y*v3.z - v3.y*vs.z) + vs.x * (v3.y*v1.z - v1.y*v3.z) + v3.x * (v1.y*vs.z - vs.y*v1.z)) / denom;
 
 	// t = |v1 v2 vs|/|v1 v2 v3|
 
@@ -98,7 +96,17 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	// t = -------------------------------------------------------------------------------------------------
 	//     v1.x * (v2.y*v3.z - v3.y*vs.z) + v2.x * (v3.y*v1.z - v1.y*v3.z) + v3.x * (v1.y*v2.z - v2.y*v1.z)
 
-	float ti = (v1.x * (v2.y*vs.z - vs.y*v2.z) + v2.x * (vs.y*v1.z - v1.y*vs.z) + vs.x * (v1.y*v2.z - v2.y*v1.z)) / denom;
+	ti = (v1.x * (v2.y*vs.z - vs.y*v2.z) + v2.x * (vs.y*v1.z - v1.y*vs.z) + vs.x * (v1.y*v2.z - v2.y*v1.z)) / denom;
+
+}
+
+bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
+
+	float B, Y, ti;
+
+	// Triangle defined by:
+	// p(B,Y) = a + B(b-a) + Y(c-a)
+	calculateTriangle(ray, B, Y, ti);
 
 	if (ti < 0) return false;
 

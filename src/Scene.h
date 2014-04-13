@@ -1,10 +1,12 @@
 #pragma once
 
+#include "ply.h"
 #include "Camera.h"
 #include "Sphere.h"
 #include "Plane.h"
 #include "Poly.h"
 #include "Triangle.h"
+#include "PlyTriangle.h"
 #include "AABB.h"
 #include "RegularGrid.h"
 
@@ -19,9 +21,11 @@ private:
 
 	Scene();
 	bool loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects);
+	void loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction);
 	// Debug
 	void printPropertiesValues(Properties* properties);
 	void showFinalValues();
+
 
 
 public:
