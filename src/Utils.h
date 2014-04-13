@@ -43,6 +43,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define CLAMP(a,min,max) (MAX(MIN(a,max),min))
 #define SWAP(T, a, b) {T temp = a; a = b; b = temp;}
+#define PRINT(text) std::cout << text << std::endl;
 //--------------------------
 
 
