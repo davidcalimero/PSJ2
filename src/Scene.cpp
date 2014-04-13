@@ -138,7 +138,6 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				>> properties->transmittance >> properties->indexRefraction >> textureFile;
 			if (textureFile != ""){
 				properties->texture = Utils::loadTexture(textureFile.c_str());
-				PRINT(textureFile.c_str());
 			}
 			else{
 				properties->texture = NULL;
@@ -210,8 +209,8 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 
 
 	PlyFile *input = read_ply(fopen(objFile, "r"));
-	Vertex ***vertices;
-	Face *** faces;
+	//Vertex ***vertices;
+	//Face *** faces;
 	unsigned int facecount = 0;
 	unsigned int vertexcount = 0;
 

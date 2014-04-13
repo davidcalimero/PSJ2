@@ -125,5 +125,5 @@ bool Triangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 glm::vec3 Triangle::getColorUV(glm::vec3 point, glm::vec3 normal){
 
 
-	return glm::vec3(0);
+	return _fill_color;
 }

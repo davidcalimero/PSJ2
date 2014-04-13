@@ -34,9 +34,9 @@ bool PlyTriangle::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 
 glm::vec3 PlyTriangle::getColorUV(glm::vec3 point, glm::vec3 normal){
 
-	float A1 = glm::dot(_normal, glm::cross(_c - _b, point - _b)) / 2;
-	float A2 = glm::dot(_normal, glm::cross(_a - _c, point - _c)) / 2;
-	float A3 = glm::dot(_normal, glm::cross(_b - _a, point - _a)) / 2;
+	float A1 = glm::dot(_normal, glm::cross(_c - _b, point - _b)) / 2.0f;
+	float A2 = glm::dot(_normal, glm::cross(_a - _c, point - _c)) / 2.0f;
+	float A3 = glm::dot(_normal, glm::cross(_b - _a, point - _a)) / 2.0f;
 
 	float AT = A1 + A2 + A3;
 
@@ -46,16 +46,13 @@ glm::vec3 PlyTriangle::getColorUV(glm::vec3 point, glm::vec3 normal){
 
 	glm::vec2 uv = L1 * _uva + L2 * _uvb + L3 * _uvc;
 
-	//PRINT(uv.x << " " << uv.y);
-	int u = abs(uv.x * _texture->size_x);
-	int v = abs(uv.y * _texture->size_y);
+	int ut = (int)abs(MIN(1.0f, uv.x) * _texture->size_x);
+	int vt = (int)abs(MIN(1.0f, uv.y) * _texture->size_y);
 
 	glm::vec3 color;
-	color.r = _texture->data[(v + u*_texture->size_y)*3 + 0 ] / 255.0f;
-	color.g = _texture->data[(v + u*_texture->size_y)*3 + 1 ] / 255.0f;
-	color.b = _texture->data[(v + u*_texture->size_y)*3 + 2 ] / 255.0f;
-	 
-	//PRINT(color.r);
+	color.r = _texture->data[(vt + ut*_texture->size_y) * 3 + 0] / 255.0f;
+	color.g = _texture->data[(vt + ut*_texture->size_y) * 3 + 1] / 255.0f;
+	color.b = _texture->data[(vt + ut*_texture->size_y) * 3 + 2] / 255.0f;
 
 	return color;
 }

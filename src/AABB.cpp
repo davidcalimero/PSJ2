@@ -63,19 +63,16 @@ glm::vec3 AABB::getColorUV(glm::vec3 point, glm::vec3 normal){
 	glm::vec3 uAxis = glm::vec3(normal.y, normal.z, -normal.x);
 	glm::vec3 vAxis = glm::cross(uAxis, normal);
 
-	float u = glm::dot(point, uAxis);
-	float v = glm::dot(point, vAxis);
+	float u = MIN(1.0f, glm::dot(point, uAxis));
+	float v = MIN(1.0f, glm::dot(point, vAxis));
 
-	//PRINT(u << " " << v);
+	int ut = (int)abs(u * _texture->size_x);
+	int vt = (int)abs(v * _texture->size_y);
 
-	glm::vec3 textureColor;
-	int ut = abs(u * _texture->size_x);
-	int vt = abs(v * _texture->size_y);
+	glm::vec3 color;
+	color.r = _texture->data[(vt + ut*_texture->size_y) * 3 + 0] / 255.0f;
+	color.g = _texture->data[(vt + ut*_texture->size_y) * 3 + 1] / 255.0f;
+	color.b = _texture->data[(vt + ut*_texture->size_y) * 3 + 2] / 255.0f;
 
-	//PRINT((vt + ut*_texture->size_y) * 3 + 0);
-	textureColor.r = _texture->data[(ut + vt*_texture->size_x) * 3 + 0];
-	textureColor.g = _texture->data[(ut + vt*_texture->size_x) * 3 + 1];
-	textureColor.b = _texture->data[(ut + vt*_texture->size_x) * 3 + 2];
-
-	return textureColor;
+	return color;
 }

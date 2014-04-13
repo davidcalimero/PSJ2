@@ -135,17 +135,5 @@ float Poly::isLeft(glm::vec2 P0, glm::vec2 P1, glm::vec2 P2){
 
 glm::vec3 Poly::getColorUV(glm::vec3 point, glm::vec3 normal){
 
-	//plano -x
-
-	//plano +x
-
-	//plano -y
-
-	//plano +y
-
-	//plano -z
-
-	//plano +z
-
-	return glm::vec3(0);
+	return _fill_color;
 }

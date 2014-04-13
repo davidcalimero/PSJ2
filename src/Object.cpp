@@ -27,8 +27,7 @@ glm::vec3 Object::GetFillColor(glm::vec3 point, glm::vec3 normal){
 		return _fill_color;
 	}
 	
-	glm::vec3 uvColor = getColorUV(point, normal);
-	return uvColor;
+	return getColorUV(point, normal) * _fill_color;
 }
 
 //Retorna as caracteristicas do material (diffuse, specular, shininess)

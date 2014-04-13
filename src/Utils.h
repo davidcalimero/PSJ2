@@ -11,11 +11,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
-#include <stddef.h>
+
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/ply_cube.nff"
+#define NFF_FILENAME "scenes/ply_teapot.nff"
+//--------------------------
+
 
 // CONFIGURACOES DO PROJECTO
 //Threads
@@ -40,9 +41,13 @@
 #define N_DEPTH_RAYS 0       //Numero de raios enviados pelo DOF num pixel (0 = no DOF)
 //--------------------------
 
+
+//TGA -------------------
 #define TGA_RGB		2
 #define TGA_A		3
 #define TGA_RLE		10
+//--------------------------
+
 
 //MACROS -------------------
 #define PI 3.14159265
@@ -55,7 +60,6 @@
 
 
 //ESTRUTURAS -------------
-
 typedef GLushort WORD;
 typedef GLubyte byte;
 
@@ -102,8 +106,6 @@ typedef struct Face {
 	GLfloat N[3];
 	GLfloat UV[2];
 } Face;
-
-
 //--------------------------
 
 

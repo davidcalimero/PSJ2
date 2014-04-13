@@ -54,8 +54,27 @@ bool Sphere::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 }
 
 glm::vec3 Sphere::getColorUV(glm::vec3 point, glm::vec3 normal){
-	/**/
+	glm::vec3 pole(0, 1, 0);
+	glm::vec3 equator(1, 0, 0);
+
+	float phi = acos(glm::dot(pole, point));
+	float v = MIN(1.0f, phi / (float)PI);
+	float u;
+
+	float theta = (acos(glm::dot(normal, equator) / sin(phi))) / (2 * (float)PI);
+
+	if (glm::dot(normal, glm::cross(pole, equator)) > 0)
+		u = theta;
+	else u = 1 - theta;
+	u = MIN(1.0f, u);
+
+	int ut = (int)abs(u * _texture->size_x);
+	int vt = (int)abs(v * _texture->size_y);
+
+	glm::vec3 color;
+	color.r = _texture->data[(vt + ut*_texture->size_y) * 3 + 0] / 255.0f;
+	color.g = _texture->data[(vt + ut*_texture->size_y) * 3 + 1] / 255.0f;
+	color.b = _texture->data[(vt + ut*_texture->size_y) * 3 + 2] / 255.0f;
 	
-	/**/
-	return glm::vec3(0);
+	return color;
 }
