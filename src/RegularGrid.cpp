@@ -30,8 +30,11 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 		if (_max.z < BBox.pmax.z) _max.z = BBox.pmax.z;
 	}
 	
-	//Depois disto, os valores minimos e maximos estao feitos, e logo podemos calcular o tamanho da Grid.
+	//Incrementar ou decrementar epsilon, para garantir colisão
+	_min -= 0.001;
+	_max += 0.001;
 
+	//Depois disto, os valores minimos e maximos estao feitos, e logo podemos calcular o tamanho da Grid.
 	float wx = (_max.x - _min.x);
 	float wy = (_max.y - _min.y);
 	float wz = (_max.z - _min.z);
@@ -86,14 +89,14 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 	}
 	/**/
 
-	//DEBUG - Verify if planes are removed from everything
+	//DEBUG - Verify if planes are removed from everything - DONE
 	/** /
 	std::cout << "Objects in total: " << objs.size() << std::endl;
 	std::cout << "Objects without planes involved: " << objsGuarded << std::endl;
 	/**/
 }
 
-bool RegularGrid::rayInterception(Ray ray){
+bool RegularGrid::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, glm::vec3 &tMax){
 
 	float normalDir, tmin, tmax;
 	float tprox = -(float)INFINITE;
@@ -131,20 +134,132 @@ bool RegularGrid::rayInterception(Ray ray){
 		//Se tprox > tdist o raio nao intersecta e se tdist < 0 o raio aponta na direccao contraria
 		if (tprox > tdist || tdist < 0)
 			return false;
+
+		tMin[i] = tmin;
+		tMax[i] = tmax;
 	}
+
+	point = glm::vec3(ray.O.x + ray.D.x * tprox, ray.O.y + ray.D.y * tprox, ray.O.z + ray.D.z * tprox);
+
 	return true;
 }
 
-std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
-	std::vector<Object*> objs;
-	//Fazer cálculos! :D
-	
-	if (!rayInterception(ray))
-		return objs;
+bool RegularGrid::isRayInsideGrid(Ray ray){
+	if (ray.O.x < _max.x && ray.O.x > _min.x && ray.O.y < _max.y && ray.O.y > _min.y && ray.O.z < _max.z && ray.O.z > _min.z) return true;
+	return false;
+}
 
-	// Calcular ponto de interseccao na grid
+std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
+	std::vector<Object*> final_objects;
+	glm::vec3 point, tmin, tmax;
+
+	if (!rayInterception(ray, point, tmin, tmax)) return final_objects;
+
+	// Calcular ponto de interseccao na grid, usando o point
+	int ix, iy, iz;
+
+	if (isRayInsideGrid(ray)){
+		ix = (int)CLAMP((ray.O.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
+		iy = (int)CLAMP((ray.O.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
+		iz = (int)CLAMP((ray.O.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
+		//PRINT("origem: (" << ray.O.x << ", " << ray.O.y << ", " << ray.O.z << ")");
+	}
+	else {
+		//PRINT("it's in! :D");
+		ix = (int)CLAMP((point.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
+		iy = (int)CLAMP((point.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
+		iz = (int)CLAMP((point.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
+	}
 
 	// fazer o traverse algorithm
+	glm::vec3 dt;
+	dt.x = (tmax.x - tmin.x) / _NX;
+	dt.y = (tmax.y - tmin.y) / _NY;
+	dt.z = (tmax.z - tmin.z) / _NZ;
+	
+	glm::vec3 tNext, step, stop;
 
-	return objs;
+	tNext.x = tmin.x + ((ix + 1) * dt.x);
+	step.x = 1.0f;
+	stop.x = (float) _NX;
+
+	tNext.y = tmin.y + ((iy + 1) * dt.y);
+	step.y = 1.0f;
+	stop.y = (float) _NY;
+
+	tNext.z = tmin.z + ((iz + 1) * dt.z);
+	step.z = 1.0f;
+	stop.z = (float) _NZ;
+
+	//std::cout << "Let's begin! :D" << std::endl;
+
+	while (true){
+		std::vector<Object*> objs = _grid[ix + _NX * iy + _NX * _NY * iz]._objects;
+
+		//if (objs.size() != 0) return objs;
+
+		glm::vec3 p, n;
+		float tB = (float) INFINITE;
+		Object* oB = NULL;
+		if (tNext.x < tNext.y && tNext.x < tNext.z){
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, p, n) && p.x < tNext.x){
+					final_objects.push_back(obj);
+					return final_objects;
+				}
+			}
+
+			if (oB != NULL){ 
+				final_objects.push_back(oB);
+				return final_objects;
+			}
+
+			tNext.x += dt.x;
+			ix += (int) step.x;
+
+			if (ix == stop.x){
+				return final_objects;
+			}
+		}
+		else if (tNext.y < tNext.z){
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, p, n) && p.y < tNext.y){
+					final_objects.push_back(obj);
+					return final_objects;
+				}
+			}
+
+			if (oB != NULL){
+				final_objects.push_back(oB);
+				return final_objects;
+			}
+
+			tNext.y += dt.y;
+			iy += (int) step.y;
+
+			if (iy == stop.y){
+				return final_objects;
+			}
+		}
+		else {
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, p, n) && p.z < tNext.z){
+					final_objects.push_back(obj);
+					return final_objects;
+				}
+			}
+
+			if (oB != NULL){
+				final_objects.push_back(oB);
+				return final_objects;
+			}
+
+			tNext.z += dt.z;
+			iz += (int) step.z;
+
+			if (iz == stop.z){
+				return final_objects;
+			}
+		}
+	}
 }
