@@ -198,14 +198,14 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 
 		//if (objs.size() != 0) return objs;
 
-		glm::vec3 p, n;
+		float t;
 		float tB = (float) INFINITE;
 		Object* oB = NULL;
 		if (tNext.x < tNext.y && tNext.x < tNext.z){
 			for (Object* obj : objs){
-				if (obj->rayInterception(ray, p, n) && p.x < tNext.x){
-					final_objects.push_back(obj);
-					return final_objects;
+				if (obj->rayInterception(ray, t) && t < tNext.x && t < tB){
+					tB = t;
+					oB = obj;
 				}
 			}
 
@@ -217,15 +217,14 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 			tNext.x += dt.x;
 			ix += (int) step.x;
 
-			if (ix == stop.x){
+			if (ix == stop.x)
 				return final_objects;
-			}
 		}
 		else if (tNext.y < tNext.z){
 			for (Object* obj : objs){
-				if (obj->rayInterception(ray, p, n) && p.y < tNext.y){
-					final_objects.push_back(obj);
-					return final_objects;
+				if (obj->rayInterception(ray, t) && t < tNext.y && t < tB){
+					tB = t;
+					oB = obj;
 				}
 			}
 
@@ -237,15 +236,14 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 			tNext.y += dt.y;
 			iy += (int) step.y;
 
-			if (iy == stop.y){
+			if (iy == stop.y)
 				return final_objects;
-			}
 		}
 		else {
 			for (Object* obj : objs){
-				if (obj->rayInterception(ray, p, n) && p.z < tNext.z){
-					final_objects.push_back(obj);
-					return final_objects;
+				if (obj->rayInterception(ray, t) && t < tNext.z && t < tB){
+					tB = t;
+					oB = obj;
 				}
 			}
 
@@ -257,9 +255,8 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 			tNext.z += dt.z;
 			iz += (int) step.z;
 
-			if (iz == stop.z){
+			if (iz == stop.z)
 				return final_objects;
-			}
 		}
 	}
 }
