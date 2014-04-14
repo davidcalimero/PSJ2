@@ -46,8 +46,14 @@ glm::vec3 PlyTriangle::getColorUV(glm::vec3 point, glm::vec3 normal){
 
 	glm::vec2 uv = L1 * _uva + L2 * _uvb + L3 * _uvc;
 
-	int ut = (int)abs(MIN(1.0f, uv.x) * _texture->size_x);
-	int vt = (int)abs(MIN(1.0f, uv.y) * _texture->size_y);
+	if (uv.x > 1)
+		uv.x -= ceil(uv.x - 1);
+
+	if (uv.y > 1)
+		uv.y -= ceil(uv.y - 1);
+
+	int ut = (int)abs(uv.x * _texture->size_x);
+	int vt = (int)abs(uv.y * _texture->size_y);
 
 	glm::vec3 color;
 	color.r = _texture->data[(vt + ut*_texture->size_y) * 3 + 0] / 255.0f;

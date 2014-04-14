@@ -63,8 +63,8 @@ glm::vec3 AABB::getColorUV(glm::vec3 point, glm::vec3 normal){
 	glm::vec3 uAxis = glm::vec3(normal.y, normal.z, -normal.x);
 	glm::vec3 vAxis = glm::cross(uAxis, normal);
 
-	float u = MIN(1.0f, glm::dot(point, uAxis));
-	float v = MIN(1.0f, glm::dot(point, vAxis));
+	float u = glm::dot(point, uAxis);
+	float v = glm::dot(point, vAxis);
 
 	int ut = (int)abs(u * _texture->size_x);
 	int vt = (int)abs(v * _texture->size_y);
