@@ -41,7 +41,7 @@ bool Scene::loadNFF(char* filename){
 std::vector<Object*> Scene::GetObjects(Ray ray){
 	if (_usingGrid)
 		return _grid->traversalAlgorithm(ray);
-	
+
 	return _objects;
 }
 
@@ -50,10 +50,10 @@ std::vector<Light*> Scene::GetLights(){
 }
 
 void Scene::printPropertiesValues(Properties* properties){
-	std::cout 	<< "Mudanca de Properties:" << std::endl
-	<< "Color (" << properties->fill_color.x << "," << properties->fill_color.y << "," << properties->fill_color.z << ") " << std::endl
-	<< "Kd " << properties->k_constants.x << ", Ks " << properties->k_constants.y << ", shininess " << properties->k_constants.z << std::endl
-	<< "transmittance " << properties->transmittance << " and index of refraction " << properties->indexRefraction << std::endl;
+	std::cout << "Mudanca de Properties:" << std::endl
+		<< "Color (" << properties->fill_color.x << "," << properties->fill_color.y << "," << properties->fill_color.z << ") " << std::endl
+		<< "Kd " << properties->k_constants.x << ", Ks " << properties->k_constants.y << ", shininess " << properties->k_constants.z << std::endl
+		<< "transmittance " << properties->transmittance << " and index of refraction " << properties->indexRefraction << std::endl;
 }
 
 void Scene::showFinalValues(){
@@ -68,7 +68,7 @@ void Scene::showFinalValues(){
 		std::cout << " and color: (" << (*it)->color.x << "," << (*it)->color.y << "," << (*it)->color.z << ")" << std::endl;
 		i++;
 	}
-}	
+}
 
 bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &up, float &angle, float &hither, glm::vec2 &resolution, glm::vec3 &bckg_color, std::vector<Light*> &lights, std::vector<Object*> &objects){
 
@@ -133,7 +133,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			std::string textureFile;
 			properties = (Properties*)malloc(sizeof(Properties));
 			std::istringstream s(line.substr(2));
-			s	>> properties->fill_color.x >> properties->fill_color.y >> properties->fill_color.z
+			s >> properties->fill_color.x >> properties->fill_color.y >> properties->fill_color.z
 				>> properties->k_constants.x >> properties->k_constants.y >> properties->k_constants.z
 				>> properties->transmittance >> properties->indexRefraction >> textureFile;
 			if (textureFile != ""){
@@ -154,6 +154,17 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				>> p3.x >> p3.y >> p3.z;
 			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 			objects.push_back(plane);
+		}
+		else if (line.substr(0, 4) == "cyl ") {
+
+			glm::vec3 p1, p2;
+			float raio;
+			std::istringstream s(line.substr(3));
+			s >> p1.x >> p1.y >> p1.z
+				>> p2.x >> p2.y >> p2.z
+				>> raio;
+			Cylinder* cylinder = new Cylinder(p1, p2, raio, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
+			objects.push_back(cylinder);
 		}
 		else if (line.substr(0, 4) == "ply ") {
 
@@ -187,7 +198,8 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 				Triangle* triforce = new Triangle(vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 				objects.push_back(triforce);
 
-			}else{
+			}
+			else{
 				Poly* poly = new Poly(nVertices, vertices, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 				objects.push_back(poly);
 			}
@@ -431,7 +443,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 				triangle_verts.push_back(verts[v1]);
 				triangle_normals.push_back(norms[v1]);
 				triangle_uvs.push_back(uvs[v1]);
-			
+
 
 				//out_vertices.push_back(verts[v2]);
 				//out_uvs.push_back(uvs[v2]);

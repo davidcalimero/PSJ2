@@ -9,6 +9,7 @@
 #include "PlyTriangle.h"
 #include "AABB.h"
 #include "RegularGrid.h"
+#include "Cylinder.h"
 
 class Scene {
 private:
