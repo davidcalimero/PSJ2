@@ -47,10 +47,22 @@ bool Cylinder::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 		return false;
 
 	if (glm::dot(point - _pb, point - _pb) >= _r * _r)
-		return false;
+		return f	alse;
 	*/
 
-	normal = glm::vec3(0, 0, 1);
+	//Surface normal at P
+	glm::vec3 v1 = _pa - point;
+	glm::vec3 v2 = glm::dot(v2, va) * va;
+	normal = (v1 - v2);
+
+	//Surface Normal da P (on caps)
+	// On Ceiling
+	//normal = va;
+
+	// On Floor
+	//normal = -va;
+
+	//PRINT(normal.x << " " << normal.y << " " << normal.z);
 
 	return true;
 }
