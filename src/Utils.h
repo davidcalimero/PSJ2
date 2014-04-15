@@ -14,13 +14,13 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/ply_teapot.nff"
+#define NFF_FILENAME "scenes/balls_only.nff"
 //--------------------------
 
 
 // CONFIGURACOES DO PROJECTO
 //Threads
-#define N_THREADS 1			 //Numero de Threads
+#define N_THREADS 8			 //Numero de Threads
 
 //Raytracing
 #define MAX_DEPTH 6		     //Profundidade dos raios secundarios
@@ -34,7 +34,7 @@
 #define MAX_SAMPLING 0	     //n x anti-aliasing (0 = no anti-aliasing)
 
 //Grid
-#define M 2.0f				 //Factor de maximizacao
+#define M 3.0f				 //Factor de maximizacao
 
 //DOF
 #define FOCALLENGTH 2.5f	 //Distancia focal da lente do DOF
