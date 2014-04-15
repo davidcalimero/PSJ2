@@ -18,6 +18,5 @@ class RegularGrid
 	public:
 		RegularGrid(std::vector<Object*> objs);
 		std::vector<Object*> traversalAlgorithm(Ray ray);
-		std::vector<Object*> traversalAlgorithm2(Ray ray);
 };
 

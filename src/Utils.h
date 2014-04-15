@@ -34,7 +34,7 @@
 #define MAX_SAMPLING 0	     //n x anti-aliasing (0 = no anti-aliasing)
 
 //Grid
-#define M 3.0f				 //Factor de maximizacao
+#define M 2.0f				 //Factor de maximizacao
 
 //DOF
 #define FOCALLENGTH 2.5f	 //Distancia focal da lente do DOF

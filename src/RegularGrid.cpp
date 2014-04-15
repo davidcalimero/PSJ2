@@ -4,7 +4,7 @@
 RegularGrid::RegularGrid(std::vector<Object*> objs){
 
 	int objsGuarded = 0;
-	
+
 	if (objs.size() != 0){
 		_min = (*objs.begin())->getBoundingBox().pmin;
 		_max = (*objs.begin())->getBoundingBox().pmax;
@@ -29,7 +29,7 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 		if (_max.y < BBox.pmax.y) _max.y = BBox.pmax.y;
 		if (_max.z < BBox.pmax.z) _max.z = BBox.pmax.z;
 	}
-	
+
 	//Incrementar ou decrementar epsilon, para garantir colisão
 	_min -= 0.001;
 	_max += 0.001;
@@ -40,9 +40,9 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 	float wz = (_max.z - _min.z);
 	float s = (float)pow(wx * wy * wz / (float)objsGuarded, 1.0f / 3.0f);
 
-	_NX = (int) trunc(M * wx / s) + 1;
-	_NY = (int) trunc(M * wy / s) + 1;
-	_NZ = (int) trunc(M * wz / s) + 1;
+	_NX = (int)trunc(M * wx / s) + 1;
+	_NY = (int)trunc(M * wy / s) + 1;
+	_NZ = (int)trunc(M * wz / s) + 1;
 
 	//Inicializamos a grid
 	_grid.resize(_NX*_NY*_NZ);
@@ -52,13 +52,13 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 		BoundingBox BBox = (*it)->getBoundingBox();
 		if (BBox.pmin == BBox.pmax)	continue;
 
-		int ixmin = (int) CLAMP((BBox.pmin.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		int iymin = (int) CLAMP((BBox.pmin.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		int izmin = (int) CLAMP((BBox.pmin.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
-		
-		int ixmax = (int) CLAMP((BBox.pmax.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		int iymax = (int) CLAMP((BBox.pmax.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		int izmax = (int) CLAMP((BBox.pmax.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
+		int ixmin = (int)CLAMP((BBox.pmin.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
+		int iymin = (int)CLAMP((BBox.pmin.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
+		int izmin = (int)CLAMP((BBox.pmin.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
+
+		int ixmax = (int)CLAMP((BBox.pmax.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
+		int iymax = (int)CLAMP((BBox.pmax.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
+		int izmax = (int)CLAMP((BBox.pmax.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
 
 		for (int z = izmin; z <= izmax; z++){
 			for (int y = iymin; y <= iymax; y++){
@@ -84,13 +84,13 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 	int number = 0;
 	int count = 0;
 	for (std::vector<Cell>::iterator cell = _grid.begin(); cell != _grid.end(); cell++){
-		std::cout << "In Cell " << number << " there is a total of " << cell->objects.size() << " objects:" << std::endl;
-		number++;
-		if (cell->objects.size() > 0)
-			count++;
-		//for (std::vector<Object*>::iterator it = cell->objects.begin(); it != cell->objects.end(); it++){
-		//	std::cout << typeid(*it).name() << std::endl;
-		//}
+	std::cout << "In Cell " << number << " there is a total of " << cell->objects.size() << " objects:" << std::endl;
+	number++;
+	if (cell->objects.size() > 0)
+	count++;
+	//for (std::vector<Object*>::iterator it = cell->objects.begin(); it != cell->objects.end(); it++){
+	//	std::cout << typeid(*it).name() << std::endl;
+	//}
 	}
 	std::cout << "Ocuppied cells number: " << count << std::endl;
 	/**/
@@ -157,146 +157,6 @@ bool RegularGrid::isRayInsideGrid(Ray ray){
 
 std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 	std::vector<Object*> final_objects;
-	glm::vec3 point, tmin, tmax;
-
-	if (!rayInterception(ray, point, tmin, tmax)) return final_objects;
-
-	// Calcular ponto de interseccao na grid, usando o point
-	int ix, iy, iz;
-
-	if (isRayInsideGrid(ray)){
-		ix = (int)CLAMP((ray.O.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		iy = (int)CLAMP((ray.O.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		iz = (int)CLAMP((ray.O.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
-		//PRINT("origem: (" << ray.O.x << ", " << ray.O.y << ", " << ray.O.z << ")");
-	}
-	else {
-		//PRINT("it's in! :D");
-		ix = (int)CLAMP((point.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		iy = (int)CLAMP((point.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		iz = (int)CLAMP((point.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
-	}
-
-	// fazer o traverse algorithm
-	glm::vec3 dt;
-	dt.x = (tmax.x - tmin.x) / (float)_NX;
-	dt.y = (tmax.y - tmin.y) / (float)_NY;
-	dt.z = (tmax.z - tmin.z) / (float)_NZ;
-	
-	glm::vec3 tNext, step, stop;
-
-	if (ray.D.x > 0){
-		tNext.x = tmin.x + ((ix + 1) * dt.x);
-		step.x = 1.0f;
-		stop.x = (float)_NX;
-	}
-	else{
-		tNext.x = tmin.x + ((ix + 1) * dt.x);
-		step.x = -1.0f;
-		stop.x = -1.0f;
-	}
-
-	if (ray.D.y > 0){
-		tNext.y = tmin.y + ((iy + 1) * dt.y);
-		step.y = 1.0f;
-		stop.y = (float)_NY;
-	}
-	else{
-		tNext.y = tmin.y + ((iy + 1) * dt.y);
-		step.y = -1.0f;
-		stop.y = -1.0f;
-	}
-
-	if (ray.D.z > 0){
-		tNext.z = tmin.z + ((iz + 1) * dt.z);
-		step.z = 1.0f;
-		stop.z = (float)_NZ;
-	}
-	else{
-		tNext.z = tmin.z + ((iz + 1) * dt.z);
-		step.z = -1.0f;
-		stop.z = -1.0f;
-	}
-
-	if (ray.D.x == 0)
-		tNext.x = INFINITE;
-	if (ray.D.y == 0)
-		tNext.y = INFINITE;
-	if (ray.D.z == 0)
-		tNext.z = INFINITE;
-
-	//std::cout << "Let's begin! :D" << std::endl;
-
-	while (true){
-		std::vector<Object*> objs = _grid[ix + _NX * iy + _NX * _NY * iz].objects;
-
-		//if (objs.size() != 0) return objs;
-
-		float t;
-		float tB = (float) INFINITE;
-		Object* oB = NULL;
-		if (tNext.x < tNext.y && tNext.x < tNext.z){
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.x && t < tB){
-					tB = t;
-					oB = obj;
-				}
-			}
-
-			if (oB != NULL){ 
-				final_objects.push_back(oB);
-				return final_objects;
-			}
-
-			tNext.x += dt.x;
-			ix += (int) step.x;
-
-			if (ix == stop.x)
-				return final_objects;
-		}
-		else if (tNext.y < tNext.z){
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.y && t < tB){
-					tB = t;
-					oB = obj;
-				}
-			}
-
-			if (oB != NULL){
-				final_objects.push_back(oB);
-				return final_objects;
-			}
-
-			tNext.y += dt.y;
-			iy += (int) step.y;
-
-			if (iy == stop.y)
-				return final_objects;
-		}
-		else {
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.z && t < tB){
-					tB = t;
-					oB = obj;
-				}
-			}
-
-			if (oB != NULL){
-				final_objects.push_back(oB);
-				return final_objects;
-			}
-
-			tNext.z += dt.z;
-			iz += (int) step.z;
-
-			if (iz == stop.z)
-				return final_objects;
-		}
-	}
-}
-
-std::vector<Object*> RegularGrid::traversalAlgorithm2(Ray ray){
-	std::vector<Object*> final_objects;
 	std::vector<Object*> empty;
 	glm::vec3 point, tmin, tmax;
 
@@ -309,10 +169,8 @@ std::vector<Object*> RegularGrid::traversalAlgorithm2(Ray ray){
 		ix = (int)CLAMP((ray.O.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
 		iy = (int)CLAMP((ray.O.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
 		iz = (int)CLAMP((ray.O.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
-		//PRINT("origem: (" << ray.O.x << ", " << ray.O.y << ", " << ray.O.z << ")");
 	}
 	else {
-		//PRINT("it's in! :D");
 		ix = (int)CLAMP((point.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
 		iy = (int)CLAMP((point.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
 		iz = (int)CLAMP((point.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
@@ -327,34 +185,34 @@ std::vector<Object*> RegularGrid::traversalAlgorithm2(Ray ray){
 	glm::vec3 tNext, step, stop;
 
 	if (ray.D.x > 0){
-		tNext.x = tmin.x + ((ix + 1) * dt.x);
+		tNext.x = tmin.x + (ix + 1) * dt.x;
 		step.x = 1.0f;
 		stop.x = (float)_NX;
 	}
 	else{
-		tNext.x = tmax.x + -((ix - 1) * dt.x);
+		tNext.x = tmax.x - ix * dt.x;
 		step.x = -1.0f;
 		stop.x = -1.0f;
 	}
 
 	if (ray.D.y > 0){
-		tNext.y = tmin.y + ((iy + 1) * dt.y);
+		tNext.y = tmin.y + (iy + 1) * dt.y;
 		step.y = 1.0f;
 		stop.y = (float)_NY;
 	}
 	else{
-		tNext.y = tmax.y + -((iy - 1) * dt.y);
+		tNext.y = tmax.y - iy * dt.y;
 		step.y = -1.0f;
 		stop.y = -1.0f;
 	}
 
 	if (ray.D.z > 0){
-		tNext.z = tmin.z + ((iz + 1) * dt.z);
+		tNext.z = tmin.z + (iz + 1) * dt.z;
 		step.z = 1.0f;
 		stop.z = (float)_NZ;
 	}
 	else{
-		tNext.z = tmax.z + -((iz - 1) * dt.z);
+		tNext.z = tmax.z - iz * dt.z;
 		step.z = -1.0f;
 		stop.z = -1.0f;
 	}
@@ -370,41 +228,60 @@ std::vector<Object*> RegularGrid::traversalAlgorithm2(Ray ray){
 		std::vector<Object*> objs = _grid[ix + _NX * iy + _NX * _NY * iz].objects;
 
 		float t;
-		for (Object* obj : objs){
-			if (obj->rayInterception(ray, t)){
-				return objs;
+		float tB = (float) INFINITE;
+		Object* oB = NULL;
+		if (tNext.x < tNext.y && tNext.x < tNext.z) {
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, t) && t < tNext.x){
+					tB = t;
+					oB = obj;
+				}
 			}
+
+			if (oB != NULL){
+				final_objects.push_back(oB);
+				return final_objects;
+			}
+				
+				
+			
+			ix = ix + step.x;
+			if (ix == (int)stop.x) return empty;
+			tNext.x += dt.x;
 		}
-		if (tNext.x < tNext.y)
-		{
-			if (tNext.x < tNext.z)
-			{
-				ix = ix + step.x;
-				if (ix == (int)stop.x) return empty;
-				tNext.x += dt.x;
+		else if (tNext.y < tNext.z) {
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, t) && t < tNext.y){
+					tB = t;
+					oB = obj;
+				}
 			}
-			else
-			{
-				iz = iz + step.z;
-				if (iz == (int)stop.z) return empty;
-				tNext.z += dt.z;
+
+			if (oB != NULL){
+				final_objects.push_back(oB);
+				return final_objects;
 			}
+
+			iy = iy + step.y;
+			if (iy == (int)stop.y) return empty;
+			tNext.y += dt.y;
 		}
-		else
-		{
-			if (tNext.y < tNext.z)
-			{
-				iy = iy + step.y;
-				if (iy == (int)stop.y) return empty;
-				tNext.y += dt.y;
+		else {
+			for (Object* obj : objs){
+				if (obj->rayInterception(ray, t) && t < tNext.z){
+					tB = t;
+					oB = obj;
+				}
 			}
-			else
-			{
-				iz = iz + step.z;
-				if (iz == (int)stop.z) return empty;
-				tNext.z += dt.z;
+
+			if (oB != NULL){
+				final_objects.push_back(oB);
+				return final_objects;
 			}
+
+			iz = iz + step.z;
+			if (iz == (int)stop.z) return empty;
+			tNext.z += dt.z;
 		}
-		
 	}
 }
