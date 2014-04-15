@@ -212,6 +212,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 
 void Scene::toggleGrid(){
 	_usingGrid = !_usingGrid;
+	std::cout << "Grid: " << (_usingGrid ? "ON" : "OFF") << std::endl;
 }
 
 void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture){

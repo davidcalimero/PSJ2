@@ -9,7 +9,7 @@ typedef struct {
 class RegularGrid
 {
 	private:
-		int _NX, _NY, _NZ;
+		int _N[3];
 		glm::vec3 _min, _max;
 		std::vector<Cell> _grid;
 		bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, glm::vec3 &tMax);

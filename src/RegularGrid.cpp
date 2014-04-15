@@ -4,7 +4,7 @@
 RegularGrid::RegularGrid(std::vector<Object*> objs){
 
 	int objsGuarded = 0;
-
+	
 	if (objs.size() != 0){
 		_min = (*objs.begin())->getBoundingBox().pmin;
 		_max = (*objs.begin())->getBoundingBox().pmax;
@@ -40,30 +40,30 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 	float wz = (_max.z - _min.z);
 	float s = (float)pow(wx * wy * wz / (float)objsGuarded, 1.0f / 3.0f);
 
-	_NX = (int)trunc(M * wx / s) + 1;
-	_NY = (int)trunc(M * wy / s) + 1;
-	_NZ = (int)trunc(M * wz / s) + 1;
+	_N[0] = (int)trunc(M * wx / s) + 1;
+	_N[1] = (int)trunc(M * wy / s) + 1;
+	_N[2] = (int)trunc(M * wz / s) + 1;
 
 	//Inicializamos a grid
-	_grid.resize(_NX*_NY*_NZ);
+	_grid.resize(_N[0] * _N[1] * _N[2]);
 
 	//Adicionamos os objectos as celulas respectivas
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		BoundingBox BBox = (*it)->getBoundingBox();
 		if (BBox.pmin == BBox.pmax)	continue;
 
-		int ixmin = (int)CLAMP((BBox.pmin.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		int iymin = (int)CLAMP((BBox.pmin.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		int izmin = (int)CLAMP((BBox.pmin.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
+		int ixmin = (int)CLAMP((BBox.pmin.x - _min.x) * _N[0] / (_max.x - _min.x), 0.0f, _N[0] - 1);
+		int iymin = (int)CLAMP((BBox.pmin.y - _min.y) * _N[1] / (_max.y - _min.y), 0.0f, _N[1] - 1);
+		int izmin = (int)CLAMP((BBox.pmin.z - _min.z) * _N[2] / (_max.z - _min.z), 0.0f, _N[2] - 1);
 
-		int ixmax = (int)CLAMP((BBox.pmax.x - _min.x) * _NX / (_max.x - _min.x), 0.0f, _NX - 1);
-		int iymax = (int)CLAMP((BBox.pmax.y - _min.y) * _NY / (_max.y - _min.y), 0.0f, _NY - 1);
-		int izmax = (int)CLAMP((BBox.pmax.z - _min.z) * _NZ / (_max.z - _min.z), 0.0f, _NZ - 1);
+		int ixmax = (int)CLAMP((BBox.pmax.x - _min.x) * _N[0] / (_max.x - _min.x), 0.0f, _N[0] - 1);
+		int iymax = (int)CLAMP((BBox.pmax.y - _min.y) * _N[1] / (_max.y - _min.y), 0.0f, _N[1] - 1);
+		int izmax = (int)CLAMP((BBox.pmax.z - _min.z) * _N[2] / (_max.z - _min.z), 0.0f, _N[2] - 1);
 
 		for (int z = izmin; z <= izmax; z++){
 			for (int y = iymin; y <= iymax; y++){
 				for (int x = ixmin; x <= ixmax; x++){
-					int index = x + _NX * y + _NX * _NY * z;
+					int index = x + _N[0] * y + _N[0] * _N[1] * z;
 					_grid[index].objects.push_back(*it);
 				}
 			}
@@ -104,7 +104,7 @@ RegularGrid::RegularGrid(std::vector<Object*> objs){
 
 bool RegularGrid::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, glm::vec3 &tMax){
 
-	float normalDir, tmin, tmax;
+	float tmin, tmax;
 	float tprox = -(float)INFINITE;
 	float tdist = (float)INFINITE;
 
@@ -115,7 +115,6 @@ bool RegularGrid::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, gl
 
 	//Calcular o as intercessoes dos planos x, y e z
 	for (int i = 0; i < 3; i++){
-		normalDir = -1;
 
 		//Se vd for nulo o raio e paralelo aos planos e se estiver fora do plano naon exister intercessao
 		if (vd[i] == 0 && (v0[i] < vmin[i] || v0[i] > vmax[i]))
@@ -125,14 +124,11 @@ bool RegularGrid::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, gl
 		tmin = (vmin[i] - v0[i]) / vd[i];
 		tmax = (vmax[i] - v0[i]) / vd[i];
 
-		if (tmin > tmax){
+		if (tmin > tmax)
 			SWAP(float, tmin, tmax);
-			normalDir = 1;
-		}
 
-		if (tmin > tprox){
+		if (tmin > tprox)
 			tprox = tmin;
-		}
 
 		if (tmax < tdist)
 			tdist = tmax;
@@ -151,137 +147,72 @@ bool RegularGrid::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &tMin, gl
 }
 
 bool RegularGrid::isRayInsideGrid(Ray ray){
-	if (ray.O.x < _max.x && ray.O.x > _min.x && ray.O.y < _max.y && ray.O.y > _min.y && ray.O.z < _max.z && ray.O.z > _min.z) return true;
-	return false;
+	return (ray.O.x < _max.x && ray.O.x > _min.x && ray.O.y < _max.y && ray.O.y > _min.y && ray.O.z < _max.z && ray.O.z > _min.z);
 }
 
 std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 	std::vector<Object*> final_objects;
-	std::vector<Object*> empty;
 	glm::vec3 point, tmin, tmax;
 
 	if (!rayInterception(ray, point, tmin, tmax)) return final_objects;
 
-	// Calcular ponto de interseccao na grid, usando o point
-	int ix, iy, iz;
+	//Traverse Algorithm
+	glm::vec3 p = isRayInsideGrid(ray) ? ray.O : point;
+	glm::vec3 tNext, step, stop, dt;
+	int ixyz[3];
 
-	if (isRayInsideGrid(ray)){
-		ix = (int)CLAMP((ray.O.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
-		iy = (int)CLAMP((ray.O.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
-		iz = (int)CLAMP((ray.O.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
-	}
-	else {
-		ix = (int)CLAMP((point.x - _min.x) * _NX / (_max.x - _min.x), 0, _NX - 1);
-		iy = (int)CLAMP((point.y - _min.y) * _NY / (_max.y - _min.y), 0, _NY - 1);
-		iz = (int)CLAMP((point.z - _min.z) * _NZ / (_max.z - _min.z), 0, _NZ - 1);
-	}
+	//Actualizar o variaveis de acordo com a direccao do raio
+	for (int i = 0; i < 3; i++){
+		//Calcular ponto de interseccao na grid, usando o point
+		ixyz[i] = (int)CLAMP((p[i] - _min[i]) * _N[i] / (_max[i] - _min[i]), 0, _N[i] - 1);
 
-	// fazer o traverse algorithm
-	glm::vec3 dt;
-	dt.x = (tmax.x - tmin.x) / (float)_NX;
-	dt.y = (tmax.y - tmin.y) / (float)_NY;
-	dt.z = (tmax.z - tmin.z) / (float)_NZ;
+		dt[i] = (tmax[i] - tmin[i]) / (float)_N[i];
 
-	glm::vec3 tNext, step, stop;
+		if (ray.D[i] > 0){
+			tNext[i] = tmin[i] + (ixyz[i] + 1) * dt[i];
+			step[i] = 1.0f;
+			stop[i] = (float)_N[i];
+		}
+		else{
+			tNext[i] = tmax[i] - ixyz[i] * dt[i];
+			step[i] = -1.0f;
+			stop[i] = -1.0f;
+		}
 
-	if (ray.D.x > 0){
-		tNext.x = tmin.x + (ix + 1) * dt.x;
-		step.x = 1.0f;
-		stop.x = (float)_NX;
-	}
-	else{
-		tNext.x = tmax.x - ix * dt.x;
-		step.x = -1.0f;
-		stop.x = -1.0f;
+		//Caso seja paralelo a um eixo o next e infinito
+		if (ray.D[i] == 0.0f)
+			tNext[i] = (float)INFINITE;
 	}
 
-	if (ray.D.y > 0){
-		tNext.y = tmin.y + (iy + 1) * dt.y;
-		step.y = 1.0f;
-		stop.y = (float)_NY;
-	}
-	else{
-		tNext.y = tmax.y - iy * dt.y;
-		step.y = -1.0f;
-		stop.y = -1.0f;
-	}
-
-	if (ray.D.z > 0){
-		tNext.z = tmin.z + (iz + 1) * dt.z;
-		step.z = 1.0f;
-		stop.z = (float)_NZ;
-	}
-	else{
-		tNext.z = tmax.z - iz * dt.z;
-		step.z = -1.0f;
-		stop.z = -1.0f;
-	}
-
-	if (ray.D.x == 0.0f)
-		tNext.x = INFINITE;
-	if (ray.D.y == 0.0f)
-		tNext.y = INFINITE;
-	if (ray.D.z == 0.0f)
-		tNext.z = INFINITE;
-
+	//Econtrar o objecto mais proximo caso exista e retornar
 	while (true){
-		std::vector<Object*> objs = _grid[ix + _NX * iy + _NX * _NY * iz].objects;
-
+		float tB = (float)INFINITE;
 		float t;
-		float tB = (float) INFINITE;
-		Object* oB = NULL;
-		if (tNext.x < tNext.y && tNext.x < tNext.z) {
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.x){
-					tB = t;
-					oB = obj;
-				}
-			}
+		Object *oB = NULL;
 
-			if (oB != NULL){
-				final_objects.push_back(oB);
-				return final_objects;
+		//Proxima celula
+		std::vector<Object*> objs = _grid[ixyz[0] + _N[0] * ixyz[1] + _N[0] * _N[1] * ixyz[2]].objects;
+
+		int i = (tNext.x < tNext.y && tNext.x < tNext.z) ? 0 : ((tNext.y < tNext.z) ? 1 : 2);
+
+		//Procura o objecto mais proximo onde exista interseccao
+		for (Object* obj : objs){
+			if (obj->rayInterception(ray, t) && t < tNext[i] && t < tB){
+				tB = t;
+				oB = obj;
 			}
-				
-				
-			
-			ix = ix + step.x;
-			if (ix == (int)stop.x) return empty;
-			tNext.x += dt.x;
 		}
-		else if (tNext.y < tNext.z) {
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.y){
-					tB = t;
-					oB = obj;
-				}
-			}
 
-			if (oB != NULL){
-				final_objects.push_back(oB);
-				return final_objects;
-			}
-
-			iy = iy + step.y;
-			if (iy == (int)stop.y) return empty;
-			tNext.y += dt.y;
+		//Se encontrou um objecto termina
+		if (oB != NULL){
+			final_objects.push_back(oB);
+			return final_objects;
 		}
-		else {
-			for (Object* obj : objs){
-				if (obj->rayInterception(ray, t) && t < tNext.z){
-					tB = t;
-					oB = obj;
-				}
-			}
 
-			if (oB != NULL){
-				final_objects.push_back(oB);
-				return final_objects;
-			}
-
-			iz = iz + step.z;
-			if (iz == (int)stop.z) return empty;
-			tNext.z += dt.z;
-		}
+		//Avanca
+		ixyz[i] += (int)step[i];
+		tNext[i] += dt[i];
+		//Se chegou ao limite termina
+		if (ixyz[i] == (int)stop[i]) return final_objects;
 	}
 }
