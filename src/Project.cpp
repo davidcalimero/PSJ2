@@ -52,8 +52,7 @@ void reshape(int w, int h) {
 
 // Draw function by primary ray casting from the eye towards the scene's objects
 void drawScene() {
-	time_t timeBefore, timeAfter;
-	time(&timeBefore);
+	auto start = std::chrono::steady_clock::now();
 	
 	/**/ //As threads vao actualizar o buffer com as respectivas cores
 	createThreadsAndJoin();
@@ -71,8 +70,10 @@ void drawScene() {
 	/**/
 	
 	glFlush();
-	time(&timeAfter);
-	std::cout << "Render time: " << difftime(timeAfter, timeBefore) << " seconds!" << std::endl;
+	
+	auto end = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	std::cout << "It took me " << elapsed.count() / 1000000.0f << " seconds." << std::endl;
 }
 
 
