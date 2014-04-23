@@ -167,11 +167,11 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			objects.push_back(cylinder);
 		}
 		else if (line.substr(0, 4) == "ply ") {
-
+			glm::vec3 pos;
 			std::string filename;
 			std::istringstream s(line.substr(3));
-			s >> filename;
-			loadPLY(filename.c_str(), objects, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
+			s >> pos.x >> pos.y >> pos.z >> filename;
+			loadPLY(filename.c_str(), pos, objects, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 		}
 
 		else if (line.substr(0, 3) == "bb ") {
@@ -215,7 +215,7 @@ void Scene::toggleGrid(){
 	std::cout << "Grid: " << (_usingGrid ? "ON" : "OFF") << std::endl;
 }
 
-void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture){
+void Scene::loadPLY(const char *objFile, glm::vec3 pos, std::vector<Object*> &objects, glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture){
 	std::vector<glm::vec3> out_vertices;
 	std::vector<glm::vec2> out_uvs;
 	std::vector<glm::vec3> out_normals;
@@ -441,7 +441,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 				//out_uvs.push_back(uvs[v1]);
 				//out_normals.push_back(norms[v1]);
 
-				triangle_verts.push_back(verts[v1]);
+				triangle_verts.push_back(verts[v1] + pos);
 				triangle_normals.push_back(norms[v1]);
 				triangle_uvs.push_back(uvs[v1]);
 
@@ -450,7 +450,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 				//out_uvs.push_back(uvs[v2]);
 				//out_normals.push_back(norms[v2]);
 
-				triangle_verts.push_back(verts[v2]);
+				triangle_verts.push_back(verts[v2] + pos);
 				triangle_normals.push_back(norms[v2]);
 				triangle_uvs.push_back(uvs[v2]);
 
@@ -458,7 +458,7 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 				//out_uvs.push_back(uvs[v3]);
 				//out_normals.push_back(norms[v3]);
 
-				triangle_verts.push_back(verts[v3]);
+				triangle_verts.push_back(verts[v3] + pos);
 				triangle_normals.push_back(norms[v3]);
 				triangle_uvs.push_back(uvs[v3]);
 
@@ -471,7 +471,6 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 			//std::cerr << "unknown element type found: " << element << std::endl;
 		}
 	}
-
 }
 
 bool Scene::isUsingGrid(){
