@@ -9,6 +9,13 @@ Object::Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance,
 	_indexRefraction = indexRefraction;
 	_texture = texture;
 	_t = (float)INFINITE;
+
+	Ray r;
+	r.D = glm::vec3(0);
+	r.O = glm::vec3(0);
+
+	_lastRay = r;
+	_lastT = 0;
 }
 
 //Indica o valor de t (distancia ao ponto de intercessao)
@@ -17,6 +24,10 @@ bool Object::rayInterception(Ray ray, float &t){
 	glm::vec3 normal;
 	bool intercessao = rayInterception(ray, point, normal);
 	t = _t;
+	//if (intercessao){
+		_lastRay = ray;
+		_lastT = t;
+	//}
 	return intercessao;
 }
 
@@ -45,4 +56,12 @@ float Object::getRefractionIndex(){
 
 BoundingBox Object::getBoundingBox(){
 	return _box;
+}
+
+Ray Object::getLastRay(){
+	return _lastRay;
+}
+
+float Object::getLastT(){
+	return _lastT;
 }

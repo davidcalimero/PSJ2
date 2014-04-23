@@ -471,4 +471,9 @@ void Scene::loadPLY(const char *objFile, std::vector<Object*> &objects, glm::vec
 			//std::cerr << "unknown element type found: " << element << std::endl;
 		}
 	}
+
+}
+
+bool Scene::isUsingGrid(){
+	return _usingGrid;
 }

@@ -14,7 +14,7 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/balls_only.nff"
+#define NFF_FILENAME "scenes/ply_teapot.nff"
 //--------------------------
 
 
@@ -38,7 +38,7 @@
 
 //DOF
 #define FOCALLENGTH 2.5f	 //Distancia focal da lente do DOF
-#define N_DEPTH_RAYS 0       //Numero de raios enviados pelo DOF num pixel (0 = no DOF)
+#define N_DEPTH_RAYS 0      //Numero de raios enviados pelo DOF num pixel (0 = no DOF)
 //--------------------------
 
 
@@ -114,5 +114,6 @@ namespace Utils {
 
 	float norma(glm::vec3 v);
 	tImageTGA *loadTexture(const char *strfilename);
+	bool equalRay(Ray r1, Ray r2);
 }
 //--------------------------

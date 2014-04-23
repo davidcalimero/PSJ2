@@ -13,6 +13,9 @@ protected:
 	float _indexRefraction;
 	tImageTGA *_texture;
 
+	Ray _lastRay;
+	float _lastT;
+
 	BoundingBox _box;
 	float _t;
 
@@ -28,5 +31,8 @@ public:
 	float getTransmittance();
 	float getRefractionIndex();
 	BoundingBox getBoundingBox();
+
+	Ray getLastRay();
+	float getLastT();
 
 };

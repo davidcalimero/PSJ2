@@ -136,4 +136,10 @@ namespace Utils {
 
 		return pImgData;
 	}
+
+
+	bool equalRay(Ray r1, Ray r2){
+		return (r1.D == r2.D && r1.O == r2.O);
+	}
 }
+

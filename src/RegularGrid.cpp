@@ -184,35 +184,44 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 			tNext[i] = (float)INFINITE;
 	}
 
+
+	bool hasIntersect = false;
+	float tB = (float)INFINITE;
+	float t;
+	Object *oB = NULL;
+
 	//Econtrar o objecto mais proximo caso exista e retornar
 	while (true){
-		float tB = (float)INFINITE;
-		float t;
-		Object *oB = NULL;
 
 		//Proxima celula
 		std::vector<Object*> objs = _grid[ixyz[0] + _N[0] * ixyz[1] + _N[0] * _N[1] * ixyz[2]].objects;
 
-		int i = (tNext.x < tNext.y && tNext.x < tNext.z) ? 0 : ((tNext.y < tNext.z) ? 1 : 2);
-
 		//Procura o objecto mais proximo onde exista interseccao
 		for (Object* obj : objs){
-			if (obj->rayInterception(ray, t) && t < tNext[i] && t < tB){
-				tB = t;
-				oB = obj;
+			if (!Utils::equalRay(ray, obj->getLastRay())){
+				if (obj->rayInterception(ray, t) && t < tB){
+					oB = obj;
+					tB = t;
+					hasIntersect = true;
+				}
 			}
 		}
 
+		int i = (tNext.x < tNext.y && tNext.x < tNext.z) ? 0 : ((tNext.y < tNext.z) ? 1 : 2);
+
 		//Se encontrou um objecto termina
-		if (oB != NULL){
+		if (tB < tNext[i] && hasIntersect){
 			final_objects.push_back(oB);
 			return final_objects;
 		}
 
+		
 		//Avanca
 		ixyz[i] += (int)step[i];
 		tNext[i] += dt[i];
 		//Se chegou ao limite termina
 		if (ixyz[i] == (int)stop[i]) return final_objects;
 	}
+
+
 }

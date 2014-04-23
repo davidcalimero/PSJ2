@@ -40,4 +40,5 @@ public:
 	std::vector<Light*> GetLights();
 	void toggleGrid();
 	
+	bool isUsingGrid();
 };

@@ -3,6 +3,11 @@
 //Verifica se um raio em direcao a cada fonte de luz tem algum objecto pelo meio
 bool RayTracing::isAffectedByLight(Ray ray){
 	std::vector<Object*> objs = Scene::getInstance().GetObjects(ray);
+
+	//Caso usar grid e haver objectos intersectados
+	if (Scene::getInstance().isUsingGrid() && objs.size() > 0)
+		return false;
+
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
 		glm::vec3 point;
 		glm::vec3 normal;
@@ -69,23 +74,23 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 
 
 //Encontra o objecto mais proximo da origem do raio
-Object * RayTracing::nearestIntersection(Ray ray, glm::vec3 &normal, glm::vec3 &point){
+Object * RayTracing::nearestIntersection(Ray ray){
 	std::vector<Object*> objs = Scene::getInstance().GetObjects(ray);
-	float nearestPoint = -1;
+	float nearestPoint = INFINITE;
 	Object * object = NULL;
+
+	//Caso usar a grid retorna o objecto mais proximo
+	if (Scene::getInstance().isUsingGrid() && objs.size() == 1)
+		return objs.at(0);
 
 	//Determinar interseção mais proxima com um objecto
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
-		glm::vec3 nPoint;
-		glm::vec3 nNormal;
-		bool intercept = ((Object*)(*it))->rayInterception(ray, nPoint, nNormal);
-		float dist = glm::distance(ray.O, nPoint);
+		float dist;
+		bool intercept = ((Object*)(*it))->rayInterception(ray, dist);
 
 		//Se estiver mais proximo actulizar valores
-		if ((nearestPoint == -1 || dist < nearestPoint) && intercept){
+		if ((nearestPoint == INFINITE || dist < nearestPoint) && intercept){
 			nearestPoint = dist;
-			point = nPoint;
-			normal = nNormal;
 			object = *it;
 		}
 	}
@@ -151,11 +156,15 @@ glm::vec3 RayTracing::rayTracing(Ray ray, int depth, float ior){
 	glm::vec3 color(0);
 
 	//Objecto mais proximo
-	Object * oB = nearestIntersection(ray, normal, point);
+	Object * oB = nearestIntersection(ray);
+
 
 	//Se nao existir uma intercepcao deve ser dada a cor do background
 	if (oB == NULL)
 		return Scene::getInstance().GetBckgColor();
+
+	//Calculo do ponto de intersecepcao e da normal nesse ponto 
+	oB->rayInterception(ray, point, normal);
 
 	//Se ainda nao atingimos o limite temos de calcular os raios secundarios
 	if (depth < MAX_DEPTH){
