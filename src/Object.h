@@ -12,19 +12,21 @@ protected:
 	float _transmittance;
 	float _indexRefraction;
 	tImageTGA *_texture;
-
-	Ray _lastRay;
-	float _lastT;
-
 	BoundingBox _box;
 	float _t;
 
-public:
-	Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture);
-	virtual bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal) = 0;
-	virtual glm::vec3 getColorUV(glm::vec3 point, glm::vec3 normal) = 0;
+	Ray _lastRay;
+	glm::vec3 _lastPoint;
+	glm::vec3 _lastNormal;
 
-	bool rayInterception(Ray ray, float &t);
+	virtual bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal) = 0;
+
+public:
+	unsigned long int _counter;  //Counter of Interceptions
+
+	Object(glm::vec3 fill_color, glm::vec3 k_constants, float transmittance, float indexRefraction, tImageTGA *texture);
+	virtual glm::vec3 getColorUV(glm::vec3 point, glm::vec3 normal) = 0;
+	bool rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal, float &t);
 	
 	glm::vec3 GetFillColor(glm::vec3 point, glm::vec3 normal);
 	glm::vec3 Get_k_constants();
@@ -32,7 +34,6 @@ public:
 	float getRefractionIndex();
 	BoundingBox getBoundingBox();
 
-	Ray getLastRay();
-	float getLastT();
+	Ray getLastInterception(glm::vec3 &point, glm::vec3 &normal);
 
 };

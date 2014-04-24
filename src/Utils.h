@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iomanip>
 #include <vector>
+#include <map>
 #include <thread>
 #include <vector>
 #include <fstream>
@@ -14,13 +15,13 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/ply_teapot.nff"
+#define NFF_FILENAME "scenes/all.nff"
 //--------------------------
 
 
 // CONFIGURACOES DO PROJECTO
 //Threads
-#define N_THREADS 8			 //Numero de Threads
+#define N_THREADS 1			 //Numero de Threads
 
 //Raytracing
 #define MAX_DEPTH 6		     //Profundidade dos raios secundarios

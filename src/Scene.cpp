@@ -19,6 +19,15 @@ Camera* Scene::GetCamera(){
 	return _camera;
 }
 
+unsigned long int Scene::getNumberOfInterceptions(){
+	unsigned long int counter = 0;
+	for (Object *obj : _objects){
+		counter += obj->_counter;
+		obj->_counter = 0;
+	}
+	return counter;
+}
+
 bool Scene::loadNFF(char* filename){
 	glm::vec3 from;
 	glm::vec3 at;
@@ -38,15 +47,44 @@ bool Scene::loadNFF(char* filename){
 	return true;
 }
 
+std::vector<Light*> Scene::GetLights(){
+	return _lights;
+}
+
 std::vector<Object*> Scene::GetObjects(Ray ray){
 	if (_usingGrid)
-		return _grid->traversalAlgorithm(ray);
+		return _grid->traversalAlgorithm(ray, glm::vec3(), glm::vec3());
 
 	return _objects;
 }
 
-std::vector<Light*> Scene::GetLights(){
-	return _lights;
+Object* Scene::GetNearestObject(Ray ray, glm::vec3 &point, glm::vec3 &normal){
+	float nearestPoint = (float)INFINITE;
+	Object * object = NULL;
+
+	//Caso se esteja a grid retorna o objecto mais proximo
+	if (_usingGrid){
+		std::vector<Object*> objs = _grid->traversalAlgorithm(ray, point, normal);
+		if (objs.size() == 0) return NULL;
+		return objs.at(0);
+	}
+
+	//Determinar intersecao mais proxima com um objecto
+	for (std::vector<Object*>::iterator it = _objects.begin(); it != _objects.end(); it++){
+		float dist;
+		glm::vec3 bPoint;
+		glm::vec3 bNormal;
+		bool intercept = ((Object*)(*it))->rayInterception(ray, bPoint, bNormal, dist);
+
+		//Se estiver mais proximo actulizar valores
+		if ((nearestPoint == INFINITE || dist < nearestPoint) && intercept){
+			nearestPoint = dist;
+			object = *it;
+			point = bPoint;
+			normal = bNormal;
+		}
+	}
+	return object;
 }
 
 void Scene::printPropertiesValues(Properties* properties){

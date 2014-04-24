@@ -9,10 +9,9 @@ bool RayTracing::isAffectedByLight(Ray ray){
 		return false;
 
 	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
-		glm::vec3 point;
-		glm::vec3 normal;
 		//Se existir uma intercessao esse ponto nao e afectado directamente pela luz
-		if (((Object*)(*it))->rayInterception(ray, point, normal))
+		float t;
+		 if (((Object*)(*it))->rayInterception(ray, glm::vec3(), glm::vec3(), t))
 			return false;
 	}
 	return true;
@@ -70,31 +69,6 @@ glm::vec3 RayTracing::shade(Object * oB, glm::vec3 normal, glm::vec3 point){
 	}
 
 	return color;
-}
-
-
-//Encontra o objecto mais proximo da origem do raio
-Object * RayTracing::nearestIntersection(Ray ray){
-	std::vector<Object*> objs = Scene::getInstance().GetObjects(ray);
-	float nearestPoint = INFINITE;
-	Object * object = NULL;
-
-	//Caso usar a grid retorna o objecto mais proximo
-	if (Scene::getInstance().isUsingGrid() && objs.size() == 1)
-		return objs.at(0);
-
-	//Determinar interseção mais proxima com um objecto
-	for (std::vector<Object*>::iterator it = objs.begin(); it != objs.end(); it++){
-		float dist;
-		bool intercept = ((Object*)(*it))->rayInterception(ray, dist);
-
-		//Se estiver mais proximo actulizar valores
-		if ((nearestPoint == INFINITE || dist < nearestPoint) && intercept){
-			nearestPoint = dist;
-			object = *it;
-		}
-	}
-	return object;
 }
 
 
@@ -156,31 +130,22 @@ glm::vec3 RayTracing::rayTracing(Ray ray, int depth, float ior){
 	glm::vec3 color(0);
 
 	//Objecto mais proximo
-	Object * oB = nearestIntersection(ray);
-
+	Object * oB = Scene::getInstance().GetNearestObject(ray, point, normal);
 
 	//Se nao existir uma intercepcao deve ser dada a cor do background
 	if (oB == NULL)
 		return Scene::getInstance().GetBckgColor();
-
-	//Calculo do ponto de intersecepcao e da normal nesse ponto 
-	oB->rayInterception(ray, point, normal);
 
 	//Se ainda nao atingimos o limite temos de calcular os raios secundarios
 	if (depth < MAX_DEPTH){
 
 		//Refleccao
 		glm::vec3 r1Color;
-		//std::thread t1(calculateReflection, ray, oB, point, normal, depth, ior, r1Color);
 		calculateReflection(ray, oB, point, normal, depth, ior, r1Color);
 
 		//Refraccao
 		glm::vec3 r2Color;
-		//std::thread t2(calculateRefraction, ray, oB, point, normal, depth, ior, r2Color);
 		calculateRefraction(ray, oB, point, normal, depth, ior, r2Color);
-
-		//t1.join();
-		//t2.join();
 
 		color += r1Color + r2Color;
 	}

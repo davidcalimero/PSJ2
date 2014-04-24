@@ -150,21 +150,21 @@ bool RegularGrid::isRayInsideGrid(Ray ray){
 	return (ray.O.x < _max.x && ray.O.x > _min.x && ray.O.y < _max.y && ray.O.y > _min.y && ray.O.z < _max.z && ray.O.z > _min.z);
 }
 
-std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
+std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	std::vector<Object*> final_objects;
-	glm::vec3 point, tmin, tmax;
+	glm::vec3 p, tmin, tmax;
 
-	if (!rayInterception(ray, point, tmin, tmax)) return final_objects;
+	if (!rayInterception(ray, p, tmin, tmax)) return final_objects;
 
 	//Traverse Algorithm
-	glm::vec3 p = isRayInsideGrid(ray) ? ray.O : point;
+	glm::vec3 pf = isRayInsideGrid(ray) ? ray.O : p;
 	glm::vec3 tNext, step, stop, dt;
 	int ixyz[3];
 
 	//Actualizar o variaveis de acordo com a direccao do raio
 	for (int i = 0; i < 3; i++){
 		//Calcular ponto de interseccao na grid, usando o point
-		ixyz[i] = (int)CLAMP((p[i] - _min[i]) * _N[i] / (_max[i] - _min[i]), 0, _N[i] - 1);
+		ixyz[i] = (int)CLAMP((pf[i] - _min[i]) * _N[i] / (_max[i] - _min[i]), 0, _N[i] - 1);
 
 		dt[i] = (tmax[i] - tmin[i]) / (float)_N[i];
 
@@ -184,11 +184,10 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 			tNext[i] = (float)INFINITE;
 	}
 
-
-	bool hasIntersect = false;
 	float tB = (float)INFINITE;
 	float t;
 	Object *oB = NULL;
+	glm::vec3 bPoint, bNormal;
 
 	//Econtrar o objecto mais proximo caso exista e retornar
 	while (true){
@@ -198,11 +197,12 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 
 		//Procura o objecto mais proximo onde exista interseccao
 		for (Object* obj : objs){
-			if (!Utils::equalRay(ray, obj->getLastRay())){
-				if (obj->rayInterception(ray, t) && t < tB){
+			if (!Utils::equalRay(ray, obj->getLastInterception(glm::vec3(), glm::vec3()))){
+				if (obj->rayInterception(ray, bPoint, bNormal, t) && t < tB){
 					oB = obj;
 					tB = t;
-					hasIntersect = true;
+					point = bPoint;
+					normal = bNormal;
 				}
 			}
 		}
@@ -210,12 +210,11 @@ std::vector<Object*> RegularGrid::traversalAlgorithm(Ray ray){
 		int i = (tNext.x < tNext.y && tNext.x < tNext.z) ? 0 : ((tNext.y < tNext.z) ? 1 : 2);
 
 		//Se encontrou um objecto termina
-		if (tB < tNext[i] && hasIntersect){
+		if (oB != NULL && tB < tNext[i]){
 			final_objects.push_back(oB);
 			return final_objects;
 		}
 
-		
 		//Avanca
 		ixyz[i] += (int)step[i];
 		tNext[i] += dt[i];

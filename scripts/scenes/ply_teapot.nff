@@ -8,4 +8,4 @@ hither 0.01
 resolution 512 512
 l -100 -100 100 1.0 1.0 1.0
 f 0.5 0.45 0.35 1 0 100000 0 0 textures/stone.tga
-ply meshes/teapot.ply
+ply 0 0 0 meshes/teapot.ply

@@ -73,7 +73,7 @@ void drawScene() {
 	
 	auto end = std::chrono::steady_clock::now();
 	auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-	std::cout << "It took me " << elapsed.count() / 1000000.0f << " seconds." << std::endl;
+	PRINT("It took me " << elapsed.count() / 1000000.0f << " seconds and "  << Scene::getInstance().getNumberOfInterceptions() << " interceptions!");
 }
 
 

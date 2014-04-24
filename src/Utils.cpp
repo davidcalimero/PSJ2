@@ -7,6 +7,7 @@ namespace Utils {
 		return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 	}
 
+	//Faz load a uma textura .tga
 	tImageTGA *loadTexture(const char *strfilename){
 		tImageTGA *pImgData;
 		FILE *pFile;
@@ -137,8 +138,10 @@ namespace Utils {
 		return pImgData;
 	}
 
-
+	//Verifica se dois raios sao iguais
 	bool equalRay(Ray r1, Ray r2){
+		if (N_THREADS != 1)
+			return false;
 		return (r1.D == r2.D && r1.O == r2.O);
 	}
 }
