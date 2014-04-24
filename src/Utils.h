@@ -14,7 +14,7 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/cylinder.nff"
+#define NFF_FILENAME "scenes/chess.nff"
 //--------------------------
 
 
@@ -37,7 +37,7 @@
 #define M 2.0f				 //Factor de maximizacao
 
 //DOF
-#define FOCALLENGTH 2.5f	 //Distancia focal da lente do DOF
+#define FOCALLENGTH 5.8f	 //Distancia focal da lente do DOF
 #define N_DEPTH_RAYS 0      //Numero de raios enviados pelo DOF num pixel (0 = no DOF)
 //--------------------------
 
