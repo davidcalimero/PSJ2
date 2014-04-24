@@ -193,11 +193,11 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 			Plane* plane = new Plane(p1, p2, p3, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 			objects.push_back(plane);
 		}
-		else if (line.substr(0, 4) == "cyl ") {
+		else if (line.substr(0, 2) == "c ") {
 
 			glm::vec3 p1, p2;
 			float raio;
-			std::istringstream s(line.substr(3));
+			std::istringstream s(line.substr(2));
 			s >> p1.x >> p1.y >> p1.z
 				>> p2.x >> p2.y >> p2.z
 				>> raio;
@@ -207,7 +207,7 @@ bool Scene::loadNFF(char* filename, glm::vec3 &from, glm::vec3 &at, glm::vec3 &u
 		else if (line.substr(0, 4) == "ply ") {
 			glm::vec3 pos;
 			std::string filename;
-			std::istringstream s(line.substr(3));
+			std::istringstream s(line.substr(4));
 			s >> pos.x >> pos.y >> pos.z >> filename;
 			loadPLY(filename.c_str(), pos, objects, properties->fill_color, properties->k_constants, properties->transmittance, properties->indexRefraction, properties->texture);
 		}

@@ -7,6 +7,7 @@ Cylinder::Cylinder(glm::vec3 pa, glm::vec3 pb, float r, glm::vec3 fill_color, gl
 	_pb = pb;
 	//Raio do cilindro
 	_r = r;
+
 }
 
 bool Cylinder::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
@@ -36,35 +37,14 @@ bool Cylinder::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	_t = ti;
 
 	//Ponto de intercessao
-	point = glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
-	/*
-	if (glm::distance(va, point - _pa) > 0)
-		return false;
-	if (glm::distance(va, point - _pb) > 0)
-		return false;
+	point= glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
 
-	if (glm::dot(point - _pa, point - _pa) >= _r * _r)
-		return false;
-
-	if (glm::dot(point - _pb, point - _pb) >= _r * _r)
-		return f	alse;
-	*/
-
-	//Surface normal at P
-	glm::vec3 v1 = _pa - point;
-	glm::vec3 v2 = glm::dot(v2, va) * va;
+	//Calculo da normal
+	glm::vec3 v1 = point - _pa;
+	glm::vec3 v2 = glm::dot(v1, va) * va;
 	normal = (v1 - v2);
-
-	//Surface Normal da P (on caps)
-	// On Ceiling
-	//normal = va;
-
-	// On Floor
-	//normal = -va;
-
-	//PRINT(normal.x << " " << normal.y << " " << normal.z);
-
 	return true;
+
 }
 
 glm::vec3 Cylinder::getColorUV(glm::vec3 point, glm::vec3 normal){
