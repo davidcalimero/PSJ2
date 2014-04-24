@@ -19,9 +19,9 @@ bool Cylinder::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	//Direccao do cilindro
 	glm::vec3 va = glm::normalize(_pb - _pa);
 
-	float A = glm::dot((v - glm::dot(v, va)* va), (v - glm::dot(v, va)* va)); //norma(v - glm::dot(v, va)* va)^2
+	float A = glm::dot((v - glm::dot(v, va)* va), (v - glm::dot(v, va)* va));
 	float B = 2 * glm::dot(v - glm::dot(v, va)* va, dp - glm::dot(dp, va)* va);
-	float C = glm::dot((dp - glm::dot(dp, va)* va), (dp - glm::dot(dp, va)* va)) - (_r * _r); //norma(dp - glm::dot(dp, va)* va)^2
+	float C = glm::dot((dp - glm::dot(dp, va)* va), (dp - glm::dot(dp, va)* va)) - (_r * _r);
 
 	float t1 = (-B + sqrt((B*B) - (4 * A *C))) / (2 * A);
 	float t2 = (-B - sqrt((B*B) - (4 * A *C))) / (2 * A);
@@ -30,14 +30,15 @@ bool Cylinder::rayInterception(Ray ray, glm::vec3 &point, glm::vec3 &normal){
 	if (t1 < 0 && t2 < 0)
 		return false;
 
-	float ti;
-	(t1 < t2 && t1 > 0) ? ti = t1 : ti = t2;
-
 	//Distancia ao ponto de intercessao
-	_t = ti;
+	if (t1 < t2 && t1 > 0)
+		_t = t1;
+	else if (t2 > 0)
+		_t = t2;
+	else return false;
 
 	//Ponto de intercessao
-	point= glm::vec3(ray.O.x + ray.D.x * ti, ray.O.y + ray.D.y * ti, ray.O.z + ray.D.z * ti);
+	point= glm::vec3(ray.O.x + ray.D.x * _t, ray.O.y + ray.D.y * _t, ray.O.z + ray.D.z * _t);
 
 	//Calculo da normal
 	glm::vec3 v1 = point - _pa;

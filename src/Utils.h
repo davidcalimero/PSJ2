@@ -14,7 +14,7 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/demo_ply.nff"
+#define NFF_FILENAME "scenes/cylinder.nff"
 //--------------------------
 
 
