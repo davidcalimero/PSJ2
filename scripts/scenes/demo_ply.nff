@@ -1,0 +1,17 @@
+b 0 0 0
+v
+from 3 -3 3
+at 0 0 0
+up 0 0 1
+angle 45
+hither 0.01
+resolution 512 512
+l 5 -5 5 1.0 1.0 1.0
+f 0.75 0.75 0.75 1 0.5 100000 0 0 textures/stone.tga
+ply 0 0 1.5 meshes/teapot.ply
+f 0.36 0.25 0.2 1 0 100000 0 0 textures/wood.tga
+ply 0 0 0 meshes/cube.ply
+f 1 0 0 1 0 100000 0 0
+ply 0 -1.5 0 meshes/suzanne.ply
+f 0 0.39 0 1 0 100000 0 0 textures/grass.tga
+ply -2 2 -0.5 meshes/floor.ply

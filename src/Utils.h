@@ -6,7 +6,6 @@
 #include <ctime>
 #include <iomanip>
 #include <vector>
-#include <map>
 #include <thread>
 #include <vector>
 #include <fstream>
@@ -15,7 +14,7 @@
 
 
 // NOME DO FICHEIRO NFF
-#define NFF_FILENAME "scenes/all.nff"
+#define NFF_FILENAME "scenes/demo_ply.nff"
 //--------------------------
 
 
