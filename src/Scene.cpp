@@ -1,7 +1,7 @@
 #include "Scene.h"
 
 Scene::Scene(){
-	_grid = false;
+	_usingGrid = false;
 }
 Scene::~Scene(){}
 
